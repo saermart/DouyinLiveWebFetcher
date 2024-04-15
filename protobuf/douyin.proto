@@ -27,6 +27,17 @@ message Message{
   string wrdsSubKey = 8;
 }
 
+message EmojiChatMessage {
+  Common common = 1;
+  User   user = 2;
+  int64 emojiId = 3;
+  Text  emojiContent = 4;
+  string defaultContent = 5;
+  Image    backgroundImage = 6;
+  bool  fromIntercom = 7;
+  bool   intercomHideUserCard = 8;
+}
+
 // 聊天
 message ChatMessage {
   Common common = 1;
@@ -696,3 +707,39 @@ message FansclubMessage {
   string content = 3;
   User user = 4;
 }
+
+// from https://github.com/scx567888/live-room-watcher/blob/master/src/main/proto/douyin_hack/webcast/im/RoomRankMessage.proto
+// 直播间排行榜
+message RoomRankMessage {
+  Common common = 1;
+  repeated RoomRank ranksList = 2;
+
+  message RoomRank{
+    User user = 1;
+    string scoreStr = 2;
+    bool profileHidden = 3;
+  }
+}
+// from https://github.com/scx567888/live-room-watcher/blob/master/src/main/proto/douyin_hack/webcast/im/RoomMsgTypeEnum.proto
+enum RoomMsgTypeEnum{
+    DEFAULTROOMMSG = 0;
+    ECOMLIVEREPLAYSAVEROOMMSG = 1;
+    CONSUMERRELATIONROOMMSG = 2;
+    JUMANJIDATAAUTHNOTIFYMSG = 3;
+    VSWELCOMEMSG = 4;
+    MINORREFUNDMSG = 5;
+    PAIDLIVEROOMNOTIFYANCHORMSG = 6;
+    HOSTTEAMSYSTEMMSG = 7;
+}
+// from https://github.com/scx567888/live-room-watcher/blob/master/src/main/proto/douyin_hack/webcast/im/RoomMessage.proto
+message RoomMessage{
+    Common common = 1;
+    string content = 2;
+    bool supprotLandscape = 3;
+    RoomMsgTypeEnum roommessagetype = 4;
+    bool systemTopMsg = 5;
+    bool forcedGuarantee = 6;
+    string bizScene = 20;
+    map<string, string> buriedPointMap = 30;
+}
+

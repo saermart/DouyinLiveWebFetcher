@@ -191,6 +191,10 @@ class DouyinLiveWebFetcher:
                     'WebcastRoomUserSeqMessage': self._parseRoomUserSeqMsg,  # 直播间统计
                     'WebcastFansclubMessage': self._parseFansclubMsg,  # 粉丝团消息
                     'WebcastControlMessage': self._parseControlMsg,  # 直播间状态消息
+                    'WebcastEmojiChatMessage': self._parseEmojiChatMsg,  # 聊天表情包消息
+                    'WebcastRoomStatsMessage': self._parseRoomStatsMsg,  # 直播间统计信息
+                    'WebcastRoomMessage': self._parseRoomMsg,  # 直播间信息
+                    'WebcastRoomRankMessage': self._parseRankMsg,  # 直播间排行榜信息
                 }.get(method)(msg.payload)
             except Exception:
                 pass
@@ -251,6 +255,31 @@ class DouyinLiveWebFetcher:
         message = FansclubMessage().parse(payload)
         content = message.content
         print(f"【粉丝团msg】 {content}")
+    
+    def _parseEmojiChatMsg(self, payload):
+        '''聊天表情包消息'''
+        message = EmojiChatMessage().parse(payload)
+        emoji_id = message.emoji_id
+        user = message.user
+        common = message.common
+        default_content = message.default_content
+        print(f"【聊天表情包id】 {emoji_id},user：{user},common:{common},default_content:{default_content}")
+    
+    def _parseRoomMsg(self, payload):
+        message = RoomMessage().parse(payload)
+        common = message.common
+        room_id = common.room_id
+        print(f"【直播间msg】直播间id:{room_id}")
+    
+    def _parseRoomStatsMsg(self, payload):
+        message = RoomStatsMessage().parse(payload)
+        display_long = message.display_long
+        print(f"【直播间统计msg】{display_long}")
+    
+    def _parseRankMsg(self, payload):
+        message = RoomRankMessage().parse(payload)
+        ranks_list = message.ranks_list
+        print(f"【直播间排行榜msg】{ranks_list}")
     
     def _parseControlMsg(self, payload):
         '''直播间状态消息'''

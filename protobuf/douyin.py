@@ -12,6 +12,22 @@ class CommentTypeTag(betterproto.Enum):
     COMMENTTYPETAGSTAR = 1
 
 
+class RoomMsgTypeEnum(betterproto.Enum):
+    """
+    from https://github.com/scx567888/live-room-watcher/blob/master/src/main/pr
+    oto/douyin_hack/webcast/im/RoomMsgTypeEnum.proto
+    """
+
+    DEFAULTROOMMSG = 0
+    ECOMLIVEREPLAYSAVEROOMMSG = 1
+    CONSUMERRELATIONROOMMSG = 2
+    JUMANJIDATAAUTHNOTIFYMSG = 3
+    VSWELCOMEMSG = 4
+    MINORREFUNDMSG = 5
+    PAIDLIVEROOMNOTIFYANCHORMSG = 6
+    HOSTTEAMSYSTEMMSG = 7
+
+
 @dataclass
 class Response(betterproto.Message):
     messages_list: List["Message"] = betterproto.message_field(1)
@@ -40,6 +56,18 @@ class Message(betterproto.Message):
     need_wrds_store: bool = betterproto.bool_field(6)
     wrds_version: int = betterproto.int64_field(7)
     wrds_sub_key: str = betterproto.string_field(8)
+
+
+@dataclass
+class EmojiChatMessage(betterproto.Message):
+    common: "Common" = betterproto.message_field(1)
+    user: "User" = betterproto.message_field(2)
+    emoji_id: int = betterproto.int64_field(3)
+    emoji_content: "Text" = betterproto.message_field(4)
+    default_content: str = betterproto.string_field(5)
+    background_image: "Image" = betterproto.message_field(6)
+    from_intercom: bool = betterproto.bool_field(7)
+    intercom_hide_user_card: bool = betterproto.bool_field(8)
 
 
 @dataclass
@@ -776,3 +804,40 @@ class FansclubMessage(betterproto.Message):
     type: int = betterproto.int32_field(2)
     content: str = betterproto.string_field(3)
     user: "User" = betterproto.message_field(4)
+
+
+@dataclass
+class RoomRankMessage(betterproto.Message):
+    """
+    from https://github.com/scx567888/live-room-watcher/blob/master/src/main/pr
+    oto/douyin_hack/webcast/im/RoomRankMessage.proto 直播间排行榜
+    """
+
+    common: "Common" = betterproto.message_field(1)
+    ranks_list: List["RoomRankMessageRoomRank"] = betterproto.message_field(2)
+
+
+@dataclass
+class RoomRankMessageRoomRank(betterproto.Message):
+    user: "User" = betterproto.message_field(1)
+    score_str: str = betterproto.string_field(2)
+    profile_hidden: bool = betterproto.bool_field(3)
+
+
+@dataclass
+class RoomMessage(betterproto.Message):
+    """
+    from https://github.com/scx567888/live-room-
+    watcher/blob/master/src/main/proto/douyin_hack/webcast/im/RoomMessage.proto
+    """
+
+    common: "Common" = betterproto.message_field(1)
+    content: str = betterproto.string_field(2)
+    supprot_landscape: bool = betterproto.bool_field(3)
+    roommessagetype: "RoomMsgTypeEnum" = betterproto.enum_field(4)
+    system_top_msg: bool = betterproto.bool_field(5)
+    forced_guarantee: bool = betterproto.bool_field(6)
+    biz_scene: str = betterproto.string_field(20)
+    buried_point_map: Dict[str, str] = betterproto.map_field(
+        30, betterproto.TYPE_STRING, betterproto.TYPE_STRING
+    )
