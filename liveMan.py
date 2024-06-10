@@ -120,23 +120,20 @@ class DouyinLiveWebFetcher:
         """
         连接抖音直播间websocket服务器，请求直播间数据
         """
-        wss = f"wss://webcast3-ws-web-lq.douyin.com/webcast/im/push/v2/?" \
-              f"app_name=douyin_web&version_code=180800&webcast_sdk_version=1.3.0&update_version_code=1.3.0" \
-              f"&compress=gzip" \
-              f"&internal_ext=internal_src:dim|wss_push_room_id:{self.room_id}|wss_push_did:{self.room_id}" \
-              f"|dim_log_id:202302171547011A160A7BAA76660E13ED|fetch_time:1676620021641|seq:1|wss_info:0-1676" \
-              f"620021641-0-0|wrds_kvs:WebcastRoomStatsMessage-1676620020691146024_WebcastRoomRankMessage-167661" \
-              f"9972726895075_AudienceGiftSyncData-1676619980834317696_HighlightContainerSyncData-2&cursor=t-1676" \
-              f"620021641_r-1_d-1_u-1_h-1" \
-              f"&host=https://live.douyin.com&aid=6383&live_id=1" \
-              f"&did_rule=3&debug=false&endpoint=live_pc&support_wrds=1&" \
-              f"im_path=/webcast/im/fetch/&user_unique_id={self.room_id}&" \
-              f"device_platform=web&cookie_enabled=true&screen_width=1440&screen_height=900&browser_language=zh&" \
-              f"browser_platform=MacIntel&browser_name=Mozilla&" \
-              f"browser_version=5.0%20(Macintosh;%20Intel%20Mac%20OS%20X%2010_15_7)%20AppleWebKit/537.36%20(KHTML,%20" \
-              f"like%20Gecko)%20Chrome/110.0.0.0%20Safari/537.36&" \
-              f"browser_online=true&tz_name=Asia/Shanghai&identity=audience&" \
-              f"room_id={self.room_id}&heartbeatDuration=0&signature=00000000"
+        wss = (f"wss://webcast5-ws-web-lq.douyin.com/webcast/im/push/v2/?"
+               f"app_name=douyin_web&version_code=180800&webcast_sdk_version=1.0.14-beta.0"
+               f"&update_version_code=1.0.14-beta.0&compress=gzip&device_platform=web&cookie_enabled=true&screen_width=1536"
+               f"&screen_height=864&browser_language=zh-CN&browser_platform=Win32&browser_name=Mozilla"
+               f"&browser_version=5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)"
+               f"%20Chrome/126.0.0.0%20Safari/537.36&browser_online=true&tz_name=Asia/Shanghai&"
+               f"cursor=r-1_d-1_u-1_fh-7385824323388707875_t-1719646741156&"
+               f"internal_ext=internal_src:dim|wss_push_room_id:{self.room_id}|wss_push_did:7311183754668557878"
+               f"|first_req_ms:1719646741059|fetch_time:1719646741156|seq:1|wss_info:0-1719646741156-0-0|"
+               f"wrds_v:7311183754668557878&host=https://live.douyin.com&aid=6383"
+               f"&live_id=1&did_rule=3&endpoint=live_pc&support_wrds=1&"
+               f"user_unique_id=7311183754668557878"
+               f"&im_path=/webcast/im/fetch/&identity=audience&need_persist_msg_count=15"
+               f"&insert_task_id=&live_reason=&room_id={self.room_id}&heartbeatDuration=0&signature=")
         headers = {
             "cookie": f"ttwid={self.ttwid}",
             'user-agent': self.user_agent,
