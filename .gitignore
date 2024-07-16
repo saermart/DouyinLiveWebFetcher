@@ -1,0 +1,7 @@
+node_modules/
+dist/
+package.json
+package-lock.json
+.idea
+.DS_Store
+*.pyc
