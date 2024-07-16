@@ -1,18 +1,47 @@
 #!/usr/bin/python
 # coding:utf-8
-
+import codecs
 # @FileName:    liveMan.py
 # @Time:        2024/1/2 21:51
 # @Author:      bubu
 # @Project:     douyinLiveWebFetcher
 import gzip
+import hashlib
 import random
 import re
 import string
+import urllib.parse
 
+import execjs
 import requests
 import websocket
+
 from protobuf.douyin import *
+
+
+def generateSignature(wss, script_file='sign.js'):
+    '''
+    出现gbk编码问题则修改 python模块subprocess的__init__函数参数encoding值为 "utf-8"
+    '''
+    tpl = ("live_id=,aid=,version_code=,webcast_sdk_version=,"
+           "room_id=,sub_room_id=,sub_channel_id=,did_rule=,"
+           "user_unique_id=,device_platform=web,device_type=,ac=,"
+           "identity=audience")
+    params = [i.split('=')[0] for i in tpl.split(',')]
+    wss_params = urllib.parse.urlparse(wss).query.split('&')
+    wss_maps = {i.split('=')[0]: i.split("=")[-1] for i in wss_params}
+    tpl_params = [f"{i}={wss_maps.get(i, '')}" for i in params]
+    param = ','.join(tpl_params)
+    md5 = hashlib.md5()
+    md5.update(param.encode())
+    md5_param = md5.hexdigest()
+    
+    with codecs.open(script_file, 'r', encoding='utf8') as f:
+        script = f.read()
+    
+    context = execjs.compile(script)
+    ret = context.call('getSign', {'X-MS-STUB': md5_param})
+    return ret.get('X-Bogus')
 
 
 def generateMsToken(length=107):
@@ -120,20 +149,24 @@ class DouyinLiveWebFetcher:
         """
         连接抖音直播间websocket服务器，请求直播间数据
         """
-        wss = (f"wss://webcast5-ws-web-lq.douyin.com/webcast/im/push/v2/?"
-               f"app_name=douyin_web&version_code=180800&webcast_sdk_version=1.0.14-beta.0"
-               f"&update_version_code=1.0.14-beta.0&compress=gzip&device_platform=web&cookie_enabled=true&screen_width=1536"
-               f"&screen_height=864&browser_language=zh-CN&browser_platform=Win32&browser_name=Mozilla"
-               f"&browser_version=5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)"
-               f"%20Chrome/126.0.0.0%20Safari/537.36&browser_online=true&tz_name=Asia/Shanghai&"
-               f"cursor=r-1_d-1_u-1_fh-7385824323388707875_t-1719646741156&"
-               f"internal_ext=internal_src:dim|wss_push_room_id:{self.room_id}|wss_push_did:7311183754668557878"
-               f"|first_req_ms:1719646741059|fetch_time:1719646741156|seq:1|wss_info:0-1719646741156-0-0|"
-               f"wrds_v:7311183754668557878&host=https://live.douyin.com&aid=6383"
-               f"&live_id=1&did_rule=3&endpoint=live_pc&support_wrds=1&"
-               f"user_unique_id=7311183754668557878"
-               f"&im_path=/webcast/im/fetch/&identity=audience&need_persist_msg_count=15"
-               f"&insert_task_id=&live_reason=&room_id={self.room_id}&heartbeatDuration=0&signature=")
+        wss = ("wss://webcast5-ws-web-hl.douyin.com/webcast/im/push/v2/?app_name=douyin_web"
+               "&version_code=180800&webcast_sdk_version=1.0.14-beta.0"
+               "&update_version_code=1.0.14-beta.0&compress=gzip&device_platform=web&cookie_enabled=true"
+               "&screen_width=1536&screen_height=864&browser_language=zh-CN&browser_platform=Win32"
+               "&browser_name=Mozilla"
+               "&browser_version=5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/126.0.0.0%20Safari/537.36"
+               "&browser_online=true&tz_name=Asia/Shanghai"
+               "&cursor=d-1_u-1_fh-7392091211001140287_t-1721106114633_r-1"
+               f"&internal_ext=internal_src:dim|wss_push_room_id:{self.room_id}|wss_push_did:7319483754668557878"
+               f"|first_req_ms:1721106114541|fetch_time:1721106114633|seq:1|wss_info:0-1721106114633-0-0|"
+               f"wrds_v:7392094459690748497"
+               f"&host=https://live.douyin.com&aid=6383&live_id=1&did_rule=3&endpoint=live_pc&support_wrds=1"
+               f"&user_unique_id=7319483754668557878&im_path=/webcast/im/fetch/&identity=audience"
+               f"&need_persist_msg_count=15&insert_task_id=&live_reason=&room_id={self.room_id}&heartbeatDuration=0")
+        
+        signature = generateSignature(wss)
+        wss += f"&signature={signature}"
+        
         headers = {
             "cookie": f"ttwid={self.ttwid}",
             'user-agent': self.user_agent,
@@ -199,7 +232,7 @@ class DouyinLiveWebFetcher:
     def _wsOnError(self, ws, error):
         print("WebSocket error: ", error)
     
-    def _wsOnClose(self, ws):
+    def _wsOnClose(self, ws, *args):
         print("WebSocket connection closed.")
     
     def _parseChatMsg(self, payload):
