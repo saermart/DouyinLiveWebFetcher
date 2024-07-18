@@ -165,20 +165,6 @@ class DouyinLiveWebFetcher:
                f"&host=https://live.douyin.com&aid=6383&live_id=1&did_rule=3&endpoint=live_pc&support_wrds=1"
                f"&user_unique_id=7319483754668557238&im_path=/webcast/im/fetch/&identity=audience"
                f"&need_persist_msg_count=15&insert_task_id=&live_reason=&room_id={self.room_id}&heartbeatDuration=0")
-        #
-        # wss = ("wss://webcast5-ws-web-lf.douyin.com/webcast/im/push/v2/?"
-        #        "app_name=douyin_web&version_code=180800&webcast_sdk_version=1.0.14-beta.0"
-        #        "&update_version_code=1.0.14-beta.0&compress=gzip&device_platform=web&cookie_enabled=true"
-        #        "&screen_width=1670&screen_height=878&browser_language=zh-CN&browser_platform=Win32&browser_name=Mozilla"
-        #        f"&browser_version=5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,"
-        #        f"%20like%20Gecko)%20Chrome/122.0.0.0%20Safari/537.36%20Edg/122.0.0.0"
-        #        f"&browser_online=true&tz_name=Asia/Shanghai&cursor=r-1_d-1_u-1_fh-7392483442342335488_t-1721197392099"
-        #        f"&internal_ext=internal_src:dim|wss_push_room_id:"
-        #        f"{self.room_id}|wss_push_did:7392486370155759155|first_req_ms:1721197391974|fetch_time:1721197392099"
-        #        f"|seq:1|wss_info:0-1721197392099-0-0|wrds_v:7392486495715591530&host=https://live.douyin.com&aid=6383"
-        #        f"&live_id=1&did_rule=3&endpoint=live_pc&support_wrds=1&user_unique_id=7392486370155759155"
-        #        f"&im_path=/webcast/im/fetch/&identity=audience&need_persist_msg_count=15&insert_task_id=&live_reason"
-        #        f"=&room_id={self.room_id}&heartbeatDuration=0")
         
         signature = generateSignature(wss)
         wss += f"&signature={signature}"
