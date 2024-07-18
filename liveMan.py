@@ -23,13 +23,12 @@ from protobuf.douyin import *
 
 def generateSignature(wss, script_file='sign.js'):
     """
-    出现gbk编码问题则修改 python模块subprocess的Popen类的__init__函数参数encoding值为 "utf-8"
+    出现gbk编码问题则修改 python模块subprocess.py的源码中Popen类的__init__函数参数encoding值为 "utf-8"
     """
-    tpl = ("live_id=,aid=,version_code=,webcast_sdk_version=,"
-           "room_id=,sub_room_id=,sub_channel_id=,did_rule=,"
-           "user_unique_id=,device_platform=,device_type=,ac=,"
-           "identity=")
-    params = [i.split('=')[0] for i in tpl.split(',')]
+    params = ("live_id,aid,version_code,webcast_sdk_version,"
+              "room_id,sub_room_id,sub_channel_id,did_rule,"
+              "user_unique_id,device_platform,device_type,ac,"
+              "identity").split(',')
     wss_params = urllib.parse.urlparse(wss).query.split('&')
     wss_maps = {i.split('=')[0]: i.split("=")[-1] for i in wss_params}
     tpl_params = [f"{i}={wss_maps.get(i, '')}" for i in params]
