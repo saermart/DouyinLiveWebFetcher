@@ -59,25 +59,6 @@ def generateMsToken(length=107):
     return random_str
 
 
-def generateTtwid():
-    """
-    产生请求头部cookie中的ttwid字段，访问抖音网页版直播间首页可以获取到响应cookie中的ttwid
-    :return: ttwid
-    """
-    url = "https://live.douyin.com/"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-                      "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    }
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-    except Exception as err:
-        print("【X】request the live url error: ", err)
-    else:
-        return response.cookies.get('ttwid')
-
-
 class DouyinLiveWebFetcher:
     
     def __init__(self, live_id):
