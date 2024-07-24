@@ -12,13 +12,28 @@ import hashlib
 import random
 import re
 import string
+import subprocess
 import urllib.parse
+from contextlib import contextmanager
+from unittest.mock import patch
 
 import execjs
 import requests
 import websocket
 
 from protobuf.douyin import *
+
+
+@contextmanager
+def patched_popen_encoding(encoding='utf-8'):
+    original_popen_init = subprocess.Popen.__init__
+    
+    def new_popen_init(self, *args, **kwargs):
+        kwargs['encoding'] = encoding
+        original_popen_init(self, *args, **kwargs)
+    
+    with patch.object(subprocess.Popen, '__init__', new_popen_init):
+        yield
 
 
 def generateSignature(wss, script_file='sign.js'):
@@ -41,7 +56,8 @@ def generateSignature(wss, script_file='sign.js'):
         script = f.read()
     
     context = execjs.compile(script)
-    ret = context.call('getSign', {'X-MS-STUB': md5_param})
+    with patched_popen_encoding(encoding='utf-8'):
+        ret = context.call('getSign', {'X-MS-STUB': md5_param})
     return ret.get('X-Bogus')
 
 
