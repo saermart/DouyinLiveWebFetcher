@@ -1,11 +1,25 @@
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
-const dom = new JSDOM('<!DOCUMENT html><p>hello world</p>')
-window = dom.window
-document = window.document
-navigator= window.navigator
-window.toString = function() {return "[object Window]"};
 
+window = {};
+new Proxy(window, {
+    get: function (target, name) {
+        return target[name] || function () { };
+    }
+});
+document = {};
+new Proxy(document, {
+    get: function (target, name) {
+        return target[name] || function () { };
+    }
+});
+navigator = {
+    userAgent: ""
+};
+new Proxy(navigator, {
+    get: function (target, name) {
+        return target[name] || function () { };
+    }
+});
+/////////////// webmssdk.es5.js ///////////////
 /** 1.0.0.53 */
 ;if (!window.byted_acrawler) {
     function w_0x25f3(_0x545d0a, _0xb73ac6) {
@@ -3803,6 +3817,13 @@ window.toString = function() {return "[object Window]"};
             'activeState': [],
             'aidList': []
         };
+        Object.defineProperty(_0x6caf, "envcode", {
+            enumerable: true,
+            get() {
+                return 1
+            },
+            set(e) {}
+        })
         function _0x53b77d(_0x357347) {
             return w_0x5c3140('484e4f4a403f5243001714366d6da13c00000025f8c25369000000ee00110307070002161103021200031103070700021303062b2f11030207000335490700044211010044001400011101014a1200001100010700010d05000000003c000e00054303491101034a12000607000711000143024911010433000611010412000833000911010412000812000947002100110107070002161101021200031101070700021303062b2f110102070003354902110105430047004f11010433002511010412000a11010412000b190400962934001111010412000c11010412000d190400962947002100110107070002161101021200031101070700021303062b2f11010207000335490842000e0e7170737c7b7045677a657067616c027c7108717077607272706707707b63767a71700003727061047c7b737a02307607767a7b667a797007737c67707760720a7a60617067427c71617d0a7c7b7b7067427c71617d0b7a606170675d707c727d610b7c7b7b70675d707c727d61', {
                 get 0x0() {
@@ -5415,7 +5436,6 @@ window.toString = function() {return "[object Window]"};
               , _0x1ffaa7 = new Uint8Array(_0x1fb174)
               , _0xeefda2 = 0x22cb + 0x1 * -0x32c + 0x1f9f * -0x1 | _0x48f290 << -0x228e + 0x22f4 * 0x1 + -0x60 | _0x504655 << 0x1075 + -0x2c * -0x26 + -0x16f8 | (-0x261a + 0x1e95 + 0x786 & Math[_0x5a9e67(0x1cf)]((0x705 + 0x1069 + -0x3 * 0x7ae) * Math[_0x5a9e67(0x18e)]())) << 0x3f4 * 0x5 + 0x59a + -0x195a | -0x1 * -0x2033 + 0x284 * 0x5 + 0xeed * -0x3;
             _0x6caf[_0x5a9e67(0x326)]++;
-            _0x6caf['envcode'] = 1;
             var _0x5eb39b = -0x55 + 0x8a3 + -0x80f & _0x6caf[_0x5a9e67(0x326)];
             _0x1ffaa7[0x18e0 * 0x1 + 0xd8d + -0x266d] = _0x4fa808 << -0x1 * 0x1117 + -0x144f + 0x256c | _0x5eb39b,
             _0x1ffaa7[-0x177d + 0x3 * 0xb39 + -0xa2d] = _0x6caf['envcode'] >> -0x163b + 0x2c3 + 0x1380 & 0x15b3 + -0x1efd + 0xa49 * 0x1,
@@ -5442,7 +5462,7 @@ window.toString = function() {return "[object Window]"};
                 'X-Bogus': _0x1633f2(_0x2e10da[_0x3e598d(0x1df)], _0x462335[_0x3e598d(0x1fc)], _0x34d47b, _0x1b3ba5, _0x55dcd4)
             };
         }
-        window._0x5c2014 = function(_0x1fa689) {
+        function _0x5c2014(_0x1fa689) {
             return w_0x5c3140('484e4f4a403f524300362d0a5f00233c0000000029b6a730000000630214000103001400020700001400030700011400041101031100031347000d11010311000313140001450023110103110004134700130211010011010311000413430114000145000607000214000102110101110002021100014303140005110005420003096b1e7e601e606766710c6b1e7e601e63726a7f7c7277200303030303030303030303030303030303030303030303030303030303030303', {
                 get 0x0() {
                     return _0x5dd467;
@@ -5454,6 +5474,7 @@ window.toString = function() {return "[object Window]"};
                 0x3: _0x1fa689
             }, this);
         }
+        window._0x5c2014 = _0x5c2014;
         function _0x3c875d(_0x17e2b2, _0x1e7967) {
             var _0x36f0c4 = _0x5612de
               , _0x292251 = new Uint8Array(-0x1d76 + 0xa81 * -0x3 + 0x3cfc);
@@ -6457,7 +6478,7 @@ window.toString = function() {return "[object Window]"};
             var _0x38d5b6 = _0x5612de;
             void (-0x7eb * 0x3 + 0xc4 * 0x2 + -0x1 * -0x1639) !== _0x53e069 && '' != _0x53e069 && (_0x6caf[_0x38d5b6(0x339)] = _0x53e069);
         }
-        _0x53ee31[_0x5612de(0x344)][_0x5612de(0x1a3)] = window._0x5c2014,
+        _0x53ee31[_0x5612de(0x344)][_0x5612de(0x1a3)] = _0x5c2014,
         _0x53ee31[_0x5612de(0x344)]['getReferer'] = _0x32e4a6,
         _0x53ee31[_0x5612de(0x344)]['setUserMode'] = _0x3498af,
         _0xd39ee2 = _0x24dc34(_0x45b94b['refererKey']) || '',
@@ -6477,7 +6498,7 @@ window.toString = function() {return "[object Window]"};
         _0x5b850b(),
         _0x59992f([_0x5612de(0x30c)]);
         var _0x1649bc = !(-0xc6b * -0x1 + -0x2315 + 0x16aa);
-        _0x1d18f2['frontierSign'] = window._0x5c2014,
+        _0x1d18f2['frontierSign'] = _0x5c2014,
         _0x1d18f2[_0x5612de(0x2e8)] = _0x32e4a6,
         _0x1d18f2[_0x5612de(0x3b9)] = _0x498349,
         _0x1d18f2[_0x5612de(0x1f8)] = _0x1649bc,
@@ -6493,7 +6514,229 @@ window.toString = function() {return "[object Window]"};
     });
 }
 
-function getSign(param) {
-    return window._0x5c2014(param);
-}
 
+/////////////// runtime.js ///////////////
+const u = {
+    84081: function (e, t, n) {
+        var r, i, o, a, A;
+        r = n(93328),
+            i = n(63567).utf8,
+            o = n(37819),
+            a = n(63567).bin,
+            (A = function (e, t) {
+                e.constructor == String ? e = t && "binary" === t.encoding ? a.stringToBytes(e) : i.stringToBytes(e) : o(e) ? e = Array.prototype.slice.call(e, 0) : Array.isArray(e) || e.constructor === Uint8Array || (e = e.toString());
+                for (var n = r.bytesToWords(e), s = 8 * e.length, c = 1732584193, u = -271733879, l = -1732584194, g = 271733878, h = 0; h < n.length; h++)
+                    n[h] = (n[h] << 8 | n[h] >>> 24) & 16711935 | (n[h] << 24 | n[h] >>> 8) & 4278255360;
+                n[s >>> 5] |= 128 << s % 32,
+                    n[(s + 64 >>> 9 << 4) + 14] = s;
+                for (var d = A._ff, f = A._gg, p = A._hh, E = A._ii, h = 0; h < n.length; h += 16) {
+                    var I = c
+                        , y = u
+                        , C = l
+                        , m = g;
+                    c = d(c, u, l, g, n[h + 0], 7, -680876936),
+                        g = d(g, c, u, l, n[h + 1], 12, -389564586),
+                        l = d(l, g, c, u, n[h + 2], 17, 606105819),
+                        u = d(u, l, g, c, n[h + 3], 22, -1044525330),
+                        c = d(c, u, l, g, n[h + 4], 7, -176418897),
+                        g = d(g, c, u, l, n[h + 5], 12, 1200080426),
+                        l = d(l, g, c, u, n[h + 6], 17, -1473231341),
+                        u = d(u, l, g, c, n[h + 7], 22, -45705983),
+                        c = d(c, u, l, g, n[h + 8], 7, 1770035416),
+                        g = d(g, c, u, l, n[h + 9], 12, -1958414417),
+                        l = d(l, g, c, u, n[h + 10], 17, -42063),
+                        u = d(u, l, g, c, n[h + 11], 22, -1990404162),
+                        c = d(c, u, l, g, n[h + 12], 7, 1804603682),
+                        g = d(g, c, u, l, n[h + 13], 12, -40341101),
+                        l = d(l, g, c, u, n[h + 14], 17, -1502002290),
+                        u = d(u, l, g, c, n[h + 15], 22, 1236535329),
+                        c = f(c, u, l, g, n[h + 1], 5, -165796510),
+                        g = f(g, c, u, l, n[h + 6], 9, -1069501632),
+                        l = f(l, g, c, u, n[h + 11], 14, 643717713),
+                        u = f(u, l, g, c, n[h + 0], 20, -373897302),
+                        c = f(c, u, l, g, n[h + 5], 5, -701558691),
+                        g = f(g, c, u, l, n[h + 10], 9, 38016083),
+                        l = f(l, g, c, u, n[h + 15], 14, -660478335),
+                        u = f(u, l, g, c, n[h + 4], 20, -405537848),
+                        c = f(c, u, l, g, n[h + 9], 5, 568446438),
+                        g = f(g, c, u, l, n[h + 14], 9, -1019803690),
+                        l = f(l, g, c, u, n[h + 3], 14, -187363961),
+                        u = f(u, l, g, c, n[h + 8], 20, 1163531501),
+                        c = f(c, u, l, g, n[h + 13], 5, -1444681467),
+                        g = f(g, c, u, l, n[h + 2], 9, -51403784),
+                        l = f(l, g, c, u, n[h + 7], 14, 1735328473),
+                        u = f(u, l, g, c, n[h + 12], 20, -1926607734),
+                        c = p(c, u, l, g, n[h + 5], 4, -378558),
+                        g = p(g, c, u, l, n[h + 8], 11, -2022574463),
+                        l = p(l, g, c, u, n[h + 11], 16, 1839030562),
+                        u = p(u, l, g, c, n[h + 14], 23, -35309556),
+                        c = p(c, u, l, g, n[h + 1], 4, -1530992060),
+                        g = p(g, c, u, l, n[h + 4], 11, 1272893353),
+                        l = p(l, g, c, u, n[h + 7], 16, -155497632),
+                        u = p(u, l, g, c, n[h + 10], 23, -1094730640),
+                        c = p(c, u, l, g, n[h + 13], 4, 681279174),
+                        g = p(g, c, u, l, n[h + 0], 11, -358537222),
+                        l = p(l, g, c, u, n[h + 3], 16, -722521979),
+                        u = p(u, l, g, c, n[h + 6], 23, 76029189),
+                        c = p(c, u, l, g, n[h + 9], 4, -640364487),
+                        g = p(g, c, u, l, n[h + 12], 11, -421815835),
+                        l = p(l, g, c, u, n[h + 15], 16, 530742520),
+                        u = p(u, l, g, c, n[h + 2], 23, -995338651),
+                        c = E(c, u, l, g, n[h + 0], 6, -198630844),
+                        g = E(g, c, u, l, n[h + 7], 10, 1126891415),
+                        l = E(l, g, c, u, n[h + 14], 15, -1416354905),
+                        u = E(u, l, g, c, n[h + 5], 21, -57434055),
+                        c = E(c, u, l, g, n[h + 12], 6, 1700485571),
+                        g = E(g, c, u, l, n[h + 3], 10, -1894986606),
+                        l = E(l, g, c, u, n[h + 10], 15, -1051523),
+                        u = E(u, l, g, c, n[h + 1], 21, -2054922799),
+                        c = E(c, u, l, g, n[h + 8], 6, 1873313359),
+                        g = E(g, c, u, l, n[h + 15], 10, -30611744),
+                        l = E(l, g, c, u, n[h + 6], 15, -1560198380),
+                        u = E(u, l, g, c, n[h + 13], 21, 1309151649),
+                        c = E(c, u, l, g, n[h + 4], 6, -145523070),
+                        g = E(g, c, u, l, n[h + 11], 10, -1120210379),
+                        l = E(l, g, c, u, n[h + 2], 15, 718787259),
+                        u = E(u, l, g, c, n[h + 9], 21, -343485551),
+                        c = c + I >>> 0,
+                        u = u + y >>> 0,
+                        l = l + C >>> 0,
+                        g = g + m >>> 0
+                }
+                return r.endian([c, u, l, g])
+            }
+            )._ff = function (e, t, n, r, i, o, a) {
+                var A = e + (t & n | ~t & r) + (i >>> 0) + a;
+                return (A << o | A >>> 32 - o) + t
+            }
+            ,
+            A._gg = function (e, t, n, r, i, o, a) {
+                var A = e + (t & r | n & ~r) + (i >>> 0) + a;
+                return (A << o | A >>> 32 - o) + t
+            }
+            ,
+            A._hh = function (e, t, n, r, i, o, a) {
+                var A = e + (t ^ n ^ r) + (i >>> 0) + a;
+                return (A << o | A >>> 32 - o) + t
+            }
+            ,
+            A._ii = function (e, t, n, r, i, o, a) {
+                var A = e + (n ^ (t | ~r)) + (i >>> 0) + a;
+                return (A << o | A >>> 32 - o) + t
+            }
+            ,
+            A._blocksize = 16,
+            A._digestsize = 16,
+            e.exports = function (e, t) {
+                if (null == e)
+                    throw Error("Illegal argument " + e);
+                var n = r.wordsToBytes(A(e, t));
+                return t && t.asBytes ? n : t && t.asString ? a.bytesToString(n) : r.bytesToHex(n)
+            }
+    },
+    37819: function (e) {
+        function t(e) {
+            return !!e.constructor && "function" == typeof e.constructor.isBuffer && e.constructor.isBuffer(e)
+        }
+        e.exports = function (e) {
+            return null != e && (t(e) || "function" == typeof e.readFloatLE && "function" == typeof e.slice && t(e.slice(0, 0)) || !!e._isBuffer)
+        }
+    }, 93328: function (e) {
+        var t, n;
+        t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+            n = {
+                rotl: function (e, t) {
+                    return e << t | e >>> 32 - t
+                },
+                rotr: function (e, t) {
+                    return e << 32 - t | e >>> t
+                },
+                endian: function (e) {
+                    if (e.constructor == Number)
+                        return 16711935 & n.rotl(e, 8) | 4278255360 & n.rotl(e, 24);
+                    for (var t = 0; t < e.length; t++)
+                        e[t] = n.endian(e[t]);
+                    return e
+                },
+                randomBytes: function (e) {
+                    for (var t = []; e > 0; e--)
+                        t.push(Math.floor(256 * Math.random()));
+                    return t
+                },
+                bytesToWords: function (e) {
+                    for (var t = [], n = 0, r = 0; n < e.length; n++,
+                        r += 8)
+                        t[r >>> 5] |= e[n] << 24 - r % 32;
+                    return t
+                },
+                wordsToBytes: function (e) {
+                    for (var t = [], n = 0; n < 32 * e.length; n += 8)
+                        t.push(e[n >>> 5] >>> 24 - n % 32 & 255);
+                    return t
+                },
+                bytesToHex: function (e) {
+                    for (var t = [], n = 0; n < e.length; n++)
+                        t.push((e[n] >>> 4).toString(16)),
+                            t.push((15 & e[n]).toString(16));
+                    return t.join("")
+                },
+                hexToBytes: function (e) {
+                    for (var t = [], n = 0; n < e.length; n += 2)
+                        t.push(parseInt(e.substr(n, 2), 16));
+                    return t
+                },
+                bytesToBase64: function (e) {
+                    for (var n = [], r = 0; r < e.length; r += 3)
+                        for (var i = e[r] << 16 | e[r + 1] << 8 | e[r + 2], o = 0; o < 4; o++)
+                            8 * r + 6 * o <= 8 * e.length ? n.push(t.charAt(i >>> 6 * (3 - o) & 63)) : n.push("=");
+                    return n.join("")
+                },
+                base64ToBytes: function (e) {
+                    e = e.replace(/[^A-Z0-9+\/]/ig, "");
+                    for (var n = [], r = 0, i = 0; r < e.length; i = ++r % 4)
+                        0 != i && n.push((t.indexOf(e.charAt(r - 1)) & Math.pow(2, -2 * i + 8) - 1) << 2 * i | t.indexOf(e.charAt(r)) >>> 6 - 2 * i);
+                    return n
+                }
+            },
+            e.exports = n
+    }, 63567: function (e) {
+        var t = {
+            utf8: {
+                stringToBytes: function (e) {
+                    return t.bin.stringToBytes(unescape(encodeURIComponent(e)))
+                },
+                bytesToString: function (e) {
+                    return decodeURIComponent(escape(t.bin.bytesToString(e)))
+                }
+            },
+            bin: {
+                stringToBytes: function (e) {
+                    for (var t = [], n = 0; n < e.length; n++)
+                        t.push(255 & e.charCodeAt(n));
+                    return t
+                },
+                bytesToString: function (e) {
+                    for (var t = [], n = 0; n < e.length; n++)
+                        t.push(String.fromCharCode(e[n]));
+                    return t.join("")
+                }
+            }
+        };
+        e.exports = t
+    }
+}
+function g(e) {
+    var n = {
+        id: e,
+        loaded: !1,
+        exports: {}
+    };
+    return u[e].call(n.exports, n, n.exports, g),
+    n.loaded = !0,
+    n.exports
+}
+function getSign(e) {
+    const res = window._0x5c2014(e)
+    setTimeout(() => process.exit(), 0)
+    return res
+}
