@@ -29,6 +29,7 @@
 - [x] 2024/10/23 16:44 成功  测试成功
 - [x] 2024/10/30 11:14 成功  测试成功
 - [x] 2024/11/06 10:55 成功  测试成功
+- [x] 2024/11/07 09:04 成功  测试成功,根据[PPG888](https://github.com/PPG888) 提出的[issue#74](https://github.com/saermart/DouyinLiveWebFetcher/issues/74)更新signature获取方式
 
 ## 抓取样例：
 ```text

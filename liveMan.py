@@ -15,6 +15,7 @@ import string
 import subprocess
 import urllib.parse
 from contextlib import contextmanager
+from py_mini_racer import MiniRacer
 from unittest.mock import patch
 
 import execjs
@@ -54,11 +55,21 @@ def generateSignature(wss, script_file='sign.js'):
     
     with codecs.open(script_file, 'r', encoding='utf8') as f:
         script = f.read()
+        
+    ctx = MiniRacer()
+    ctx.eval(script)
     
-    context = execjs.compile(script)
-    with patched_popen_encoding(encoding='utf-8'):
-        ret = context.call('getSign', {'X-MS-STUB': md5_param})
-    return ret.get('X-Bogus')
+    try:
+        signature = ctx.call("get_sign", md5_param)
+        return signature
+    except Exception as e:
+        print(e)
+    
+    # 以下代码对应js脚本为sign_v0.js
+    # context = execjs.compile(script)
+    # with patched_popen_encoding(encoding='utf-8'):
+    #     ret = context.call('getSign', {'X-MS-STUB': md5_param})
+    # return ret.get('X-Bogus')
 
 
 def generateMsToken(length=107):
