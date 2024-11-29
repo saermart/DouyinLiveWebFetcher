@@ -15,6 +15,80 @@
 - `protoc`版本：`libprotoc 25.1`
 - NodeJs v18.2.0
 
+## Conda安装
+使用 Conda 创建一个符合你需求的环境：
+
+1. **创建 Conda 虚拟环境**
+
+   在命令行中运行以下命令来创建一个 Conda 环境，Python 版本为 3.7+。
+
+   ```sh
+   conda create -n douyin_env python=3.7
+   ```
+
+   - `-n douyin_env` 指定了环境名称，你可以根据需要更改名称。
+   - `python=3.7` 确保使用 Python 3.7 版本。
+
+2. **激活环境**
+
+   使用以下命令激活刚创建的环境：
+
+   ```sh
+   conda activate douyin_env
+   ```
+
+3. **安装所需依赖**
+
+   安装 `protoc`（Protocol Buffers 编译器），`protoc` 通常需要手动安装，具体步骤如下：
+
+   - **手动安装 `protoc`：**
+     - 从 [GitHub 官方发布页面](https://github.com/protocolbuffers/protobuf/releases) 下载 `libprotoc 25.1` 对应的 Windows 版本的二进制压缩包。
+     - 解压并将其目录添加到系统的 `PATH` 环境变量中，使得命令行能够找到 `protoc`。
+
+4. **安装 Node.js**
+
+   如果还没有安装 Node.js，可以从 [Node.js 官方页面](https://nodejs.org/) 下载适合 Windows 的安装包，确保选择 v18.2.0 的版本进行安装，并且确认其已被添加到 `PATH` 环境变量中。
+
+5. **安装其他 Python 库**
+
+   你可以根据代码的需求安装其他库，例如 `configparser`、`logging`、以及其他自定义模块的依赖：
+
+   ```sh
+   pip install configparser
+   ```
+
+6. **检查安装**
+
+   - **检查 Python 版本**：
+
+     ```sh
+     python --version
+     ```
+     确认输出为 3.7+。
+
+   - **检查 protoc 版本**：
+
+     ```sh
+     protoc --version
+     ```
+     确认输出为 `libprotoc 25.1`。
+
+   - **检查 Node.js 版本**：
+
+     ```sh
+     node --version
+     ```
+     确认输出为 `v18.2.0`。
+
+### 总结
+
+- 创建 Conda 环境：`conda create -n douyin_env python=3.7`
+- 激活环境：`conda activate douyin_env`
+- 手动安装 `protoc` 并添加到 `PATH`
+- 安装 Node.js v18.2.0
+- 安装 Python 所需库，例如：`pip install configparser`
+
+这样就完成了一个适用于 Windows 10 的 Conda 虚拟环境配置，包含 Python 3.7+、`protoc`、Node.js 等所需环境组件。如果还有其他问题，欢迎继续询问。
 
 ## 有效测试：
 - [x] 2024/03/25 20:18 成功  爱因斯坦他有奶便是娘
