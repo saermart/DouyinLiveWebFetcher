@@ -9,5 +9,5 @@
 from liveMan import DouyinLiveWebFetcher
 
 if __name__ == '__main__':
-    live_id = '890013832180'
+    live_id = '647989367751'
     DouyinLiveWebFetcher(live_id).start()
