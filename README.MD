@@ -88,4 +88,4 @@
 ```
 
 ## buy me a coffee
-<img src="alipay.jpg" width="600" height="400">
+<img src="alipay.jpg" width="400" height="400">
