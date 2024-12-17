@@ -21,6 +21,8 @@
 - [x] 2024/11/07 09:04 成功  测试成功,根据[PPG888](https://github.com/PPG888) 提出的[issue#74](https://github.com/saermart/DouyinLiveWebFetcher/issues/74)更新signature获取方式
 - [x] 2024/12/01 15:08 成功  测试成功
 - [x] 2024/12/11 15:08 成功  测试成功,添加赞赏渠道(thx :)
+- [x] 2024/12/17 10:41 成功  测试成功
+- 
 
 
 ## 抓取样例：
