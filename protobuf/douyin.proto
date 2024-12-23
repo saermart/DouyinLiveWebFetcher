@@ -1,6 +1,5 @@
 syntax = "proto3";
-package douyin;
-
+option go_package = "generated/douyin/";
 message Response {
   repeated Message messagesList = 1;
   string cursor = 2;
@@ -30,12 +29,13 @@ message Message{
 message EmojiChatMessage {
   Common common = 1;
   User   user = 2;
-  int64 emojiId = 3;
+  uint64 emojiId = 3;
   Text  emojiContent = 4;
   string defaultContent = 5;
   Image    backgroundImage = 6;
   bool  fromIntercom = 7;
   bool   intercomHideUserCard = 8;
+  PublicAreaCommon public_area_common =9;
 }
 
 // 聊天
@@ -235,8 +235,27 @@ message PublicAreaCommon {
   Image userLabel = 1;
   uint64 userConsumeInRoom = 2;
   uint64 userSendGiftCntInRoom = 3;
-}
+  uint64 individual_priority =4;
+  uint64 support_pin =6;
+  SuffixText suffix_text =7;
+  int32 im_action =8;
+  bool forbidden_profile =9;
+  ChatReplyRespInfo reply_resp =10;
+  uint64 is_featured =12;
+  bool need_filter_display =13;
 
+}
+message SuffixText{
+  uint64 biz_type =1;
+  Text text=2;
+}
+message ChatReplyRespInfo{
+  uint64 reply_msg_id=1;
+  uint64 reply_id=2;
+  Text reply_text =3;
+  uint64 reply_uid=4;
+  string reply_webcast_uid=5;
+}
 message EffectConfig {
   uint64 type = 1;
   Image icon = 2;
@@ -264,20 +283,22 @@ message EffectConfig {
 
 message Text {
   string key = 1;
-  string defaultPatter = 2;
-  TextFormat defaultFormat = 3;
-  repeated TextPiece piecesList = 4;
+  string default_pattern = 2;
+  TextFormat default_format = 3;
+  repeated TextPiece pieces = 4;
 }
 
 message TextPiece {
-  bool type = 1;
+  uint32 type = 1;
   TextFormat format = 2;
-  string stringValue = 3;
-  TextPieceUser userValue = 4;
-  TextPieceGift giftValue = 5;
-  TextPieceHeart heartValue = 6;
-  TextPiecePatternRef patternRefValue = 7;
-  TextPieceImage imageValue = 8;
+  string value_ref = 3;
+  string string_value =11;
+  TextPieceUser uservalue =21;
+  TextPieceGift giftvalue =22;
+  TextPieceHeart heartvalue =23;
+  TextPiecePatternRef patternrefvalue =24;
+  TextPieceImage imagevalue =25;
+  string schema_key =100;
 }
 
 
@@ -308,6 +329,10 @@ message PatternRef {
 message TextPieceUser {
   User user = 1;
   bool withColon = 2;
+  bool self_show_real_name =3;
+  uint32 left_show_extension =4;
+  string left_additional_content =5;
+  string right_additional_content =6;
 }
 
 message TextFormat {
@@ -315,10 +340,10 @@ message TextFormat {
   bool bold = 2;
   bool italic = 3;
   uint32 weight = 4;
-  uint32 italicAngle = 5;
-  uint32 fontSize = 6;
-  bool useHeighLightColor = 7;
-  bool useRemoteClor = 8;
+  uint32 italic_angle = 5;
+  uint32 font_size = 6;
+  bool use_heigh_light_color = 7;
+  bool use_remote_clor = 8;
 }
 
 // 点赞
@@ -411,28 +436,30 @@ message Against {
 
 message Common {
   string method = 1;
-  uint64 msgId = 2;
-  uint64 roomId = 3;
-  uint64 createTime = 4;
+  uint64 msg_id = 2;
+  uint64 room_id = 3;
+  uint64 create_time = 4;
   uint32 monitor = 5;
-  bool isShowMsg = 6;
+  bool is_show_msg = 6;
   string describe = 7;
+  Text display_text =8;
   //  DisplayText displayText = 8;
-  uint64 foldType = 9;
-  uint64 anchorFoldType = 10;
+  uint64 fold_type = 9;
+  uint64 anchor_fold_type = 10;
   uint64 priorityScore = 11;
   string logId = 12;
   string msgProcessFilterK = 13;
   string msgProcessFilterV = 14;
   User user = 15;
   //  Room room = 16;
-  uint64 anchorFoldTypeV2 = 17;
-  uint64 processAtSeiTimeMs = 18;
-  uint64 randomDispatchMs = 19;
-  bool isDispatch = 20;
-  uint64 channelId = 21;
-  uint64 diffSei2absSecond = 22;
-  uint64 anchorFoldDuration = 23;
+  uint64 anchor_fold_type_v2 = 17;
+  uint64 process_at_sei_time_ms = 18;
+  uint64 random_dispatch_ms = 19;
+  bool is_dispatch = 20;
+  uint64 channel_id = 21;
+  uint64 diff_sei2abs_second = 22;
+  uint64 anchor_fold_duration = 23;
+  uint64 app_id =24;
 }
 
 message User {
@@ -743,3 +770,56 @@ message RoomMessage{
     map<string, string> buriedPointMap = 30;
 }
 
+message RanklistHourEntranceMessage{
+  Common common = 1;
+  RanklistHourEntrance info =2;
+}
+message RanklistHourEntrance {
+  repeated RanklistHourEntrance_Info global_infos = 1; // 全局信息列表
+  repeated RanklistHourEntrance_Info default_global_infos = 2; // 默认全局信息列表
+  repeated RanklistHourEntrance_Info vertical_infos = 3; // 垂直信息列表
+  repeated RanklistHourEntrance_Info default_vertical_infos = 4; // 默认垂直信息列表
+}
+message RanklistHourEntrance_Info {
+  // "details" 字段是一个重复字段，使用 RanklistHourEntrance.Detail 消息类型
+  repeated RanklistHourEntrance_Detail details = 1;
+}
+message RanklistHourEntrance_Detail {
+  repeated RanklistHourEntrance_Page pages = 1; // 假设 pages 是 RanklistHourEntrance_Page 类型
+  int32 ranklist_type = 2;                       // 排名列表类型
+  string title = 3;                              // 标题
+  string ranklist_extra = 4;                     // 排名列表额外信息
+  string entrance_extra = 5;                     // 入口额外信息
+  string schema = 6;                             // 模式
+}
+message RanklistHourEntrance_Page {
+  string content = 1;               // Content of the page
+  string background_color = 2;      // Background color of the page
+  int64 show_times = 3;             // Number of times the page is shown (or similar)
+  int32 content_type = 4;           // Type of the content
+}
+message InRoomBannerMessage {
+  // common 字段，引用 Common 消息类型
+  Common common = 1;
+  
+  // extra 字段，字符串类型
+  string extra = 2;
+  
+  // position 字段，整型
+  int32 position = 3;
+  
+  // action_type 字段，整型
+  int32 action_type = 4;
+  
+  // container_url 字段，字符串类型
+  string container_url = 5;
+  
+  // lynx_container_url 字段，字符串类型
+  string lynx_container_url = 6;
+  
+  // container_type 字段，整型
+  int32 container_type = 7;
+  
+  // op_type 字段，整型
+  int32 op_type = 8;
+}
