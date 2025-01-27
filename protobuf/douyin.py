@@ -841,3 +841,15 @@ class RoomMessage(betterproto.Message):
     buried_point_map: Dict[str, str] = betterproto.map_field(
         30, betterproto.TYPE_STRING, betterproto.TYPE_STRING
     )
+
+
+@dataclass
+class RoomStreamAdaptationMessage(betterproto.Message):
+    """
+    from https://github.com/jwwsjlm/douyinLive/tree/main/protobuf/douyin.proto
+    """
+
+    common: "Common" = betterproto.message_field(1)
+    adaptation_type: int = betterproto.int32_field(2)
+    adaptation_height_ratio: float = betterproto.float_field(3)
+    adaptation_body_center_ratio: float = betterproto.float_field(4)

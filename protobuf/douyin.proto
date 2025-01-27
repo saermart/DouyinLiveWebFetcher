@@ -743,3 +743,11 @@ message RoomMessage{
     map<string, string> buriedPointMap = 30;
 }
 
+
+// from https://github.com/jwwsjlm/douyinLive/tree/main/protobuf/douyin.proto
+message RoomStreamAdaptationMessage {
+  Common common = 1;
+  int32 adaptationType = 2;
+  float adaptationHeightRatio = 3;
+  float adaptationBodyCenterRatio = 4;
+}
