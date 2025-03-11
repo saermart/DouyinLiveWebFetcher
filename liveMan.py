@@ -9,6 +9,7 @@
 import codecs
 import gzip
 import hashlib
+import json
 import random
 import re
 import string
@@ -152,6 +153,32 @@ class DouyinLiveWebFetcher:
             self.__room_id = match.group(1)
             
             return self.__room_id
+        
+    def get_room_status(self):
+        """
+        获取直播间开播状态:
+        room_status: 2 直播已结束
+        room_status: 0 直播进行中
+        """
+        url = ('https://live.douyin.com/webcast/room/web/enter/?aid=6383'
+               '&app_name=douyin_web&live_id=1&device_platform=web&language=zh-CN&enter_from=web_live'
+               '&cookie_enabled=true&screen_width=1536&screen_height=864&browser_language=zh-CN&browser_platform=Win32'
+               '&browser_name=Edge&browser_version=133.0.0.0'
+               f'&web_rid={self.live_id}'
+               f'&room_id_str={self.room_id}'
+               '&enter_source=&is_need_double_stream=false&insert_task_id=&live_reason='
+               '&msToken=&a_bogus=')
+        resp = requests.get(url, headers={
+            'User-Agent': self.user_agent,
+            'Cookie':f'ttwid={self.ttwid};'
+        })
+        data = resp.json().get('data')
+        if data:
+            room_status = data.get('room_status')
+            user = data.get('user')
+            user_id = user.get('id_str')
+            nickname = user.get('nickname')
+            print(f"【{nickname}】[{user_id}]直播间：{['正在直播','已结束'][bool(room_status)]}.")
     
     def _connectWebSocket(self):
         """
