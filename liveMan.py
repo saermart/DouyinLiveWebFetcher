@@ -9,7 +9,6 @@
 import codecs
 import gzip
 import hashlib
-import json
 import random
 import re
 import string
@@ -153,7 +152,7 @@ class DouyinLiveWebFetcher:
             self.__room_id = match.group(1)
             
             return self.__room_id
-        
+    
     def get_room_status(self):
         """
         获取直播间开播状态:
@@ -170,7 +169,7 @@ class DouyinLiveWebFetcher:
                '&msToken=&a_bogus=')
         resp = requests.get(url, headers={
             'User-Agent': self.user_agent,
-            'Cookie':f'ttwid={self.ttwid};'
+            'Cookie': f'ttwid={self.ttwid};'
         })
         data = resp.json().get('data')
         if data:
@@ -178,7 +177,7 @@ class DouyinLiveWebFetcher:
             user = data.get('user')
             user_id = user.get('id_str')
             nickname = user.get('nickname')
-            print(f"【{nickname}】[{user_id}]直播间：{['正在直播','已结束'][bool(room_status)]}.")
+            print(f"【{nickname}】[{user_id}]直播间：{['正在直播', '已结束'][bool(room_status)]}.")
     
     def _connectWebSocket(self):
         """
