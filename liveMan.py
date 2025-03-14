@@ -13,6 +13,8 @@ import random
 import re
 import string
 import subprocess
+import threading
+import time
 import urllib.parse
 from contextlib import contextmanager
 from unittest.mock import patch
@@ -218,11 +220,27 @@ class DouyinLiveWebFetcher:
             self.stop()
             raise
     
+    def _sendHeartbeat(self):
+        """
+        发送心跳包
+        """
+        while True:
+            try:
+                heartbeat = PushFrame(payload_type='hb').SerializeToString()
+                self.ws.send(heartbeat, websocket.ABNF.OPCODE_PING)
+                print("【√】发送心跳包")
+            except Exception as e:
+                print("【X】心跳包检测错误: ", e)
+                break
+            else:
+                time.sleep(5)
+    
     def _wsOnOpen(self, ws):
         """
         连接建立成功
         """
-        print("WebSocket connected.")
+        print("【√】WebSocket连接成功.")
+        threading.Thread(target=self._sendHeartbeat).start()
     
     def _wsOnMessage(self, ws, message):
         """
@@ -269,6 +287,7 @@ class DouyinLiveWebFetcher:
         print("WebSocket error: ", error)
     
     def _wsOnClose(self, ws, *args):
+        self.get_room_status()
         print("WebSocket connection closed.")
     
     def _parseChatMsg(self, payload):
