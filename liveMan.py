@@ -49,6 +49,7 @@ def generateSignature(wss, script_file='sign.js'):
     wss_params = urllib.parse.urlparse(wss).query.split('&')
     wss_maps = {i.split('=')[0]: i.split("=")[-1] for i in wss_params}
     tpl_params = [f"{i}={wss_maps.get(i, '')}" for i in params]
+    # print(tpl_params)
     param = ','.join(tpl_params)
     md5 = hashlib.md5()
     md5.update(param.encode())
