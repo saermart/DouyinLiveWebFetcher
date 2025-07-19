@@ -7,7 +7,7 @@ js_code = ''
 
 for file in js_files:
     with open(file, 'r', encoding='utf-8') as f:
-        js_code += f.read() + ';;;\n;;;;'
+        js_code += f.read() + '\n'
 
 # 创建 Node.js 运行环境
 ctx = execjs.compile(js_code)

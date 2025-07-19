@@ -1,2 +1,3 @@
-var window = globalThis;
-var self = globalThis;
+var window = globalThis
+var self = globalThis
+window.Jode = ()=>{}
