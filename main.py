@@ -9,7 +9,7 @@
 from liveMan import DouyinLiveWebFetcher
 
 if __name__ == '__main__':
-    live_id = '446424098532'
+    live_id = '6222206013'
     room = DouyinLiveWebFetcher(live_id)
     room.get_room_status()
     room.start()
