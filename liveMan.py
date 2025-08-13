@@ -101,6 +101,24 @@ class DouyinLiveWebFetcher:
         self.live_url = "https://live.douyin.com/"
         self.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " \
                           "Chrome/120.0.0.0 Safari/537.36"
+        
+        # 添加钩子
+        self.wsOnOpen = None
+        self.onChatMsg = None # 聊天消息
+        self.onGiftMsg = None # 礼物消息
+        self.onLikeMsg = None # 点赞消息
+        self.onMemberMsg = None # 进入直播间消息
+        self.onSocialMsg = None # 关注消息
+        self.onRoomUserSeqMsg = None # 直播间统计
+        self.onFansclubMsg = None # 粉丝团消息
+        self.onControlMsg = None # 直播间状态消息
+        self.onEmojiChatMsg = None # 聊天表情包消息
+        self.onRoomStatsMsg = None # 直播间统计信息
+        self.onRoomMsg = None # 直播间信息
+        self.onRankMsg = None # 直播间排行榜信息
+        self.onRoomStreamAdaptationMsg = None # 直播间流配置
+        self.wsOnError = None
+        self.wsOnClose = None
     
     def start(self):
         self._connectWebSocket()
@@ -241,6 +259,8 @@ class DouyinLiveWebFetcher:
         """
         print("【√】WebSocket连接成功.")
         threading.Thread(target=self._sendHeartbeat).start()
+        if callable(self.wsOnOpen):
+            self.wsOnOpen(ws)
     
     def _wsOnMessage(self, ws, message):
         """
@@ -285,10 +305,14 @@ class DouyinLiveWebFetcher:
     
     def _wsOnError(self, ws, error):
         print("WebSocket error: ", error)
+        if callable(self.wsOnError):
+            self.wsOnError(ws, error)
     
     def _wsOnClose(self, ws, *args):
         self.get_room_status()
         print("WebSocket connection closed.")
+        if callable(self.wsOnClose):
+            self.wsOnClose(ws, *args)
     
     def _parseChatMsg(self, payload):
         """聊天消息"""
@@ -297,6 +321,8 @@ class DouyinLiveWebFetcher:
         user_id = message.user.id
         content = message.content
         print(f"【聊天msg】[{user_id}]{user_name}: {content}")
+        if callable(self.onChatMsg):
+            self.onChatMsg(user_name, user_id, content)
     
     def _parseGiftMsg(self, payload):
         """礼物消息"""
@@ -305,6 +331,8 @@ class DouyinLiveWebFetcher:
         gift_name = message.gift.name
         gift_cnt = message.combo_count
         print(f"【礼物msg】{user_name} 送出了 {gift_name}x{gift_cnt}")
+        if callable(self.onGiftMsg):
+            self.onGiftMsg(user_name, gift_name, gift_cnt)
     
     def _parseLikeMsg(self, payload):
         '''点赞消息'''
@@ -312,6 +340,8 @@ class DouyinLiveWebFetcher:
         user_name = message.user.nick_name
         count = message.count
         print(f"【点赞msg】{user_name} 点了{count}个赞")
+        if callable(self.onLikeMsg):
+            self.onLikeMsg(user_name, count)
     
     def _parseMemberMsg(self, payload):
         '''进入直播间消息'''
@@ -320,6 +350,8 @@ class DouyinLiveWebFetcher:
         user_id = message.user.id
         gender = ["女", "男"][message.user.gender]
         print(f"【进场msg】[{user_id}][{gender}]{user_name} 进入了直播间")
+        if callable(self.onMemberMsg):
+            self.onMemberMsg(user_name, user_id, gender)
     
     def _parseSocialMsg(self, payload):
         '''关注消息'''
@@ -327,6 +359,8 @@ class DouyinLiveWebFetcher:
         user_name = message.user.nick_name
         user_id = message.user.id
         print(f"【关注msg】[{user_id}]{user_name} 关注了主播")
+        if callable(self.onSocialMsg):
+            self.onSocialMsg(user_name, user_id)
     
     def _parseRoomUserSeqMsg(self, payload):
         '''直播间统计'''
@@ -334,12 +368,16 @@ class DouyinLiveWebFetcher:
         current = message.total
         total = message.total_pv_for_anchor
         print(f"【统计msg】当前观看人数: {current}, 累计观看人数: {total}")
+        if callable(self.onRoomUserSeqMsg):
+            self.onRoomUserSeqMsg(current, total)
     
     def _parseFansclubMsg(self, payload):
         '''粉丝团消息'''
         message = FansclubMessage().parse(payload)
         content = message.content
         print(f"【粉丝团msg】 {content}")
+        if callable(self.onFansclubMsg):
+            self.onFansclubMsg(content)
     
     def _parseEmojiChatMsg(self, payload):
         '''聊天表情包消息'''
@@ -349,22 +387,30 @@ class DouyinLiveWebFetcher:
         common = message.common
         default_content = message.default_content
         print(f"【聊天表情包id】 {emoji_id},user：{user},common:{common},default_content:{default_content}")
-    
+        if callable(self.onEmojiChatMsg):
+            self.onEmojiChatMsg(emoji_id, user, common, default_content)
+
     def _parseRoomMsg(self, payload):
         message = RoomMessage().parse(payload)
         common = message.common
         room_id = common.room_id
         print(f"【直播间msg】直播间id:{room_id}")
+        if callable(self.onRoomMsg):
+            self.onRoomMsg(room_id)
     
     def _parseRoomStatsMsg(self, payload):
         message = RoomStatsMessage().parse(payload)
         display_long = message.display_long
         print(f"【直播间统计msg】{display_long}")
+        if callable(self.onRoomStatsMsg):
+            self.onRoomStatsMsg(display_long)
     
     def _parseRankMsg(self, payload):
         message = RoomRankMessage().parse(payload)
         ranks_list = message.ranks_list
         print(f"【直播间排行榜msg】{ranks_list}")
+        if callable(self.onRankMsg):
+            self.onRankMsg(ranks_list)
     
     def _parseControlMsg(self, payload):
         '''直播间状态消息'''
@@ -373,8 +419,13 @@ class DouyinLiveWebFetcher:
         if message.status == 3:
             print("直播间已结束")
             self.stop()
+        
+        if callable(self.onControlMsg):
+            self.onControlMsg(message.status)
     
     def _parseRoomStreamAdaptationMsg(self, payload):
         message = RoomStreamAdaptationMessage().parse(payload)
         adaptationType = message.adaptation_type
         print(f'直播间adaptation: {adaptationType}')
+        if callable(self.onRoomStreamAdaptationMsg):
+            self.onRoomStreamAdaptationMsg(adaptationType)
