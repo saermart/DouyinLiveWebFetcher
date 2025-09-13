@@ -15,6 +15,7 @@ import string
 import subprocess
 import threading
 import time
+import execjs
 import urllib.parse
 from contextlib import contextmanager
 from unittest.mock import patch
@@ -23,7 +24,23 @@ import requests
 import websocket
 from py_mini_racer import MiniRacer
 
+from ac_signature import get__ac_signature
 from protobuf.douyin import *
+
+from urllib3.util.url import parse_url
+
+
+def execute_js(js_file: str):
+    """
+    执行 JavaScript 文件
+    :param js_file: JavaScript 文件路径
+    :return: 执行结果
+    """
+    with open(js_file, 'r', encoding='utf-8') as file:
+        js_code = file.read()
+    
+    ctx = execjs.compile(js_code)
+    return ctx
 
 
 @contextmanager
@@ -73,14 +90,14 @@ def generateSignature(wss, script_file='sign.js'):
     # return ret.get('X-Bogus')
 
 
-def generateMsToken(length=107):
+def generateMsToken(length=182):
     """
     产生请求头部cookie中的msToken字段，其实为随机的107位字符
     :param length:字符位数
     :return:msToken
     """
     random_str = ''
-    base_str = string.ascii_letters + string.digits + '=_'
+    base_str = string.ascii_letters + string.digits + '-_'
     _len = len(base_str) - 1
     for _ in range(length):
         random_str += base_str[random.randint(0, _len)]
@@ -89,18 +106,23 @@ def generateMsToken(length=107):
 
 class DouyinLiveWebFetcher:
     
-    def __init__(self, live_id):
+    def __init__(self, live_id, abogus_file='a_bogus.js'):
         """
         直播间弹幕抓取对象
         :param live_id: 直播间的直播id，打开直播间web首页的链接如：https://live.douyin.com/261378947940，
                         其中的261378947940即是live_id
         """
+        self.abogus_file = abogus_file
         self.__ttwid = None
         self.__room_id = None
+        self.session = requests.Session()
         self.live_id = live_id
+        self.host = "https://www.douyin.com/"
         self.live_url = "https://live.douyin.com/"
-        self.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " \
-                          "Chrome/120.0.0.0 Safari/537.36"
+        self.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0"
+        self.headers = {
+            'User-Agent': self.user_agent
+        }
     
     def start(self):
         self._connectWebSocket()
@@ -120,7 +142,7 @@ class DouyinLiveWebFetcher:
             "User-Agent": self.user_agent,
         }
         try:
-            response = requests.get(self.live_url, headers=headers)
+            response = self.session.get(self.live_url, headers=headers)
             response.raise_for_status()
         except Exception as err:
             print("【X】Request the live url error: ", err)
@@ -142,7 +164,7 @@ class DouyinLiveWebFetcher:
             "cookie": f"ttwid={self.ttwid}&msToken={generateMsToken()}; __ac_nonce=0123407cc00a9e438deb4",
         }
         try:
-            response = requests.get(url, headers=headers)
+            response = self.session.get(url, headers=headers)
             response.raise_for_status()
         except Exception as err:
             print("【X】Request the live room url error: ", err)
@@ -155,24 +177,56 @@ class DouyinLiveWebFetcher:
             
             return self.__room_id
     
+    def get_ac_nonce(self):
+        """
+        获取 __ac_nonce
+        """
+        resp_cookies = self.session.get(self.host, headers=self.headers).cookies
+        return resp_cookies.get("__ac_nonce")
+    
+    def get_ac_signature(self, __ac_nonce: str = None) -> str:
+        """
+        获取 __ac_signature
+        """
+        __ac_signature = get__ac_signature(self.host[8:], __ac_nonce, self.user_agent)
+        self.session.cookies.set("__ac_signature", __ac_signature)
+        return __ac_signature
+    
+    def get_a_bogus(self, url_params: dict):
+        """
+        获取 a_bogus
+        """
+        url = urllib.parse.urlencode(url_params)
+        ctx = execute_js(self.abogus_file)
+        _a_bogus = ctx.call("get_ab", url, self.user_agent)
+        return _a_bogus
+    
     def get_room_status(self):
         """
         获取直播间开播状态:
         room_status: 2 直播已结束
         room_status: 0 直播进行中
         """
+        msToken = generateMsToken()
+        nonce = self.get_ac_nonce()
+        signature = self.get_ac_signature(nonce)
         url = ('https://live.douyin.com/webcast/room/web/enter/?aid=6383'
-               '&app_name=douyin_web&live_id=1&device_platform=web&language=zh-CN&enter_from=web_live'
-               '&cookie_enabled=true&screen_width=1536&screen_height=864&browser_language=zh-CN&browser_platform=Win32'
-               '&browser_name=Edge&browser_version=133.0.0.0'
+               '&app_name=douyin_web&live_id=1&device_platform=web&language=zh-CN&enter_from=page_refresh'
+               '&cookie_enabled=true&screen_width=5120&screen_height=1440&browser_language=zh-CN&browser_platform=Win32'
+               '&browser_name=Edge&browser_version=140.0.0.0'
                f'&web_rid={self.live_id}'
                f'&room_id_str={self.room_id}'
-               '&enter_source=&is_need_double_stream=false&insert_task_id=&live_reason='
-               '&msToken=&a_bogus=')
-        resp = requests.get(url, headers={
-            'User-Agent': self.user_agent,
-            'Cookie': f'ttwid={self.ttwid};'
+               '&enter_source=&is_need_double_stream=false&insert_task_id=&live_reason=&msToken=' + msToken)
+        query = parse_url(url).query
+        params = {i[0]: i[1] for i in [j.split('=') for j in query.split('&')]}
+        a_bogus = self.get_a_bogus(params)  # 计算a_bogus,成功率不是100%，出现失败时重试即可
+        url += f"&a_bogus={a_bogus}"
+        headers = self.headers.copy()
+        headers.update({
+            'Referer': f'https://live.douyin.com/{self.live_id}',
+            'Cookie': f'ttwid={self.ttwid};__ac_nonce={nonce}; __ac_signature={signature}',
         })
+        resp = self.session.get(url, headers=headers)
         data = resp.json().get('data')
         if data:
             room_status = data.get('room_status')
