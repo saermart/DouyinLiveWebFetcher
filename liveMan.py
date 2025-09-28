@@ -123,12 +123,24 @@ class DouyinLiveWebFetcher:
         self.headers = {
             'User-Agent': self.user_agent
         }
+        self._running = False
     
     def start(self):
-        self._connectWebSocket()
+        self._running = True
+        while self._running:
+            try:
+                self._connectWebSocket()
+                if self._running:
+                    print("【i】WebSocket 连接意外断开，5秒后将重新连接...")
+                    time.sleep(5)
+            except Exception as e:
+                print("【X】WebSocket 连接意外断开:", e)
+                time.sleep(5)
     
     def stop(self):
-        self.ws.close()
+        self._running = False
+        if self.ws:
+            self.ws.close()
     
     @property
     def ttwid(self):
@@ -268,11 +280,7 @@ class DouyinLiveWebFetcher:
                                          on_message=self._wsOnMessage,
                                          on_error=self._wsOnError,
                                          on_close=self._wsOnClose)
-        try:
-            self.ws.run_forever()
-        except Exception:
-            self.stop()
-            raise
+        self.ws.run_forever()
     
     def _sendHeartbeat(self):
         """
