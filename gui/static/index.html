@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抖音弹幕监控</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo">🎬 抖音弹幕监控</div>
+                <span class="version">v2.0 GUI增强版</span>
+            </div>
+            <div class="header-center">
+                <div class="status-indicator" id="statusIndicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">未连接</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button id="loginBtn" class="btn btn-primary" onclick="handleLogin()">🔐 登录</button>
+                <button id="logoutBtn" class="btn btn-secondary hidden" onclick="handleLogout()">退出登录</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left Sidebar - User Info -->
+            <aside class="sidebar sidebar-left">
+                <div class="panel user-panel">
+                    <div class="user-avatar-container" id="userInfo">
+                        <img src="data:image/svg+xml,..." alt="Avatar" class="user-avatar" id="userAvatar">
+                        <div class="user-details">
+                            <h3 class="user-nickname" id="userNickname">未登录</h3>
+                            <p class="user-id" id="userId">--</p>
+                        </div>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat-item"><span class="stat-label">关注</span><span class="stat-value" id="followingCount">0</span></div>
+                        <div class="stat-item"><span class="stat-label">粉丝</span><span class="stat-value" id="followerCount">0</span></div>
+                        <div class="stat-item"><span class="stat-label">等级</span><span class="stat-value" id="userLevel">0</span></div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center - Message Stream -->
+            <section class="message-stream-container">
+                <div class="message-stream" id="messageStream"></div>
+            </section>
+
+            <!-- Right Sidebar - Stats & Controls -->
+            <aside class="sidebar sidebar-right">
+                <div class="panel stats-panel">
+                    <h3 class="panel-title">📊 实时统计</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card stat-chat">
+                            <div class="stat-icon">💬</div>
+                            <div class="stat-number" id="totalChats">0</div>
+                            <div class="stat-label">总弹幕</div>
+                        </div>
+                        <div class="stat-card stat-gift">
+                            <div class="stat-icon">🎁</div>
+                            <div class="stat-number" id="totalGifts">0</div>
+                            <div class="stat-label">总礼物</div>
+                        </div>
+                        <div class="stat-card stat-like">
+                            <div class="stat-icon">👍</div>
+                            <div class="stat-number" id="totalLikes">0</div>
+                            <div class="stat-label">总点赞</div>
+                        </div>
+                        <div class="stat-card stat-member">
+                            <div class="stat-icon">🚪</div>
+                            <div class="stat-number" id="newMembers">0</div>
+                            <div class="stat-label">新观众</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel controls-panel">
+                    <h3 class="panel-title">⚙️ 控制面板</h3>
+                    <div class="control-group">
+                        <label>直播间ID:</label>
+                        <input type="text" id="liveIdInput" placeholder="输入直播间ID" value="194498382893">
+                        <div class="btn-row">
+                            <button id="startBtn" class="btn btn-success" onclick="handleStart()">▶️ 开始监控</button>
+                            <button id="stopBtn" class="btn btn-danger" onclick="handleStop()" disabled>⏹ 停止监控</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <button class="btn btn-primary full-width" onclick="handleExport()">📥 导出消息</button>
+                    </div>
+                </div>
+                <div class="panel interaction-panel hidden" id="interactionPanel">
+                    <input type="text" id="commentInput" placeholder="输入弹幕内容..." maxlength="100">
+                    <div class="btn-row">
+                        <button class="btn btn-success flex-1" onclick="handleSendComment()">发送弹幕</button>
+                        <button class="btn btn-warning" onclick="handleSendLike()">👍 点赞</button>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
