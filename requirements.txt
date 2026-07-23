@@ -1,7 +1,7 @@
 requests==2.31.0
 protobuf==5.29.6
-betterproto==2.0.0b6
 websocket-client==1.7.0
 PyExecJS==1.5.1
 mini_racer==0.12.4
 protoletariat==3.3.10
+backports.zstd ; python_version<'3.14'

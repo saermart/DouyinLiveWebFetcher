@@ -26,6 +26,5 @@ if __name__ == '__main__':
         print(f"LIVE_ID 应当是纯数字")
         sys.exit(1)
 
-    room = DouyinLiveWebFetcher(live_id)
-    # room.get_room_status() # 失效
-    room.start()
+    fetcher = DouyinLiveWebFetcher(live_id)
+    fetcher.run_forever(poll_interval=10)
