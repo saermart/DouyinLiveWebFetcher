@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 '''
-# 2026-07-12
+# 2026-09-05
 rm -rf js/
-wget -cP js/ https://lf-webcast-platform.bytetos.com/obj/webcast-platform-cdn/webcast/douyin_live/chunks/transport-schema-im.63ff9a29.js
-wget -cP js/ https://lf-webcast-platform.bytetos.com/obj/webcast-platform-cdn/webcast/douyin_live/chunks/live-schema-im.aa08852d.js
-wget -cP js/ https://lf-webcast-platform.bytetos.com/obj/webcast-platform-cdn/webcast/douyin_live/chunks/ecom-schema-im.aea538da.js
+wget -cP js/ https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/async/transport-schema-im.ca057845.js
+wget -cP js/ https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/async/live-schema-im.ddd0a844.js
+wget -cP js/ https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/async/ecom-schema-im.709477ba.js
 
 python3 douyin_js_to_proto.py js/*.js
 '''
