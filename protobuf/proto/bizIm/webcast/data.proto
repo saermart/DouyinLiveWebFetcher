@@ -756,6 +756,7 @@ message Banner {
   int64 appointment_id = 18;
   repeated string tracking_type = 19;
   bool is_hidden = 20;
+  string schema_url_lynx = 21;
   string open_id = 5000;
 }
 
@@ -778,6 +779,7 @@ message BannerContainer {
   string lynx_container_url = 7;
   int64 container_type = 8;
   repeated string token_list = 9;
+  string lynx_container_url_v2 = 10;
 }
 
 message BannerData {
@@ -808,6 +810,7 @@ message BannerFeedbackView {
   FeedbackProps feedback_props = 100;
   BannerFeedbackViewCustomProps custom_props = 101;
   BasicProps basic_props = 102;
+  CoupleSeatProps couple_seat_props = 103;
 }
 
 message BannerFeedbackViewCustomProps {
@@ -829,6 +832,7 @@ message BannerView {
   CardProps card_props = 103;
   PublicProps public_props = 104;
   BannerViewCustomProps custom_props = 105;
+  CoupleSeatProps couple_seat_props = 106;
 }
 
 message BannerViewCustomProps {
@@ -933,6 +937,16 @@ message BattleBuffCardMeta {
   string card_extra_info = 6;
 }
 
+message BattleChallenge {
+  string id = 1;
+  string channel_id = 2;
+  string battle_id = 3;
+  int32 setting_id = 4;
+  string title = 5;
+  string effect_id = 6;
+  string pc_helper_effect_id = 7;
+}
+
 message BattleCloudCollaborateConfig {
   int32 panel_type = 1;
   bool start_lightning_effect = 2;
@@ -1024,6 +1038,17 @@ message BattleContributorsRankListV2 {
   string loser_open_id_str = 5001;
 }
 
+message BattleEasterEggInfo {
+  map<string,EasterEggInfo> easter_egg_info_map = 1;
+  bool is_revelry = 2;
+  map<string,User> user_map = 3;
+  string trigger_user_id = 4;
+  string first_advance_easter_egg_id = 5;
+  repeated string advance_easter_egg_id_list = 6;
+  string trigger_user_open_id = 5000;
+  map<string,EasterEggInfo> open_easter_egg_info_map = 5001;
+}
+
 message BattleLinkerInviteMessageExtra {
   int64 match_type = 1;
   string tips = 2;
@@ -1087,6 +1112,14 @@ message BattleRankUser {
   int64 rank = 3;
   int64 grade_buff_score = 4;
   string sub_des = 5;
+}
+
+message BattleRemoteUser {
+  string user_id = 1;
+  string nickname = 2;
+  Image avatar_medium = 3;
+  int32 reply_status = 4;
+  string open_id = 5000;
 }
 
 message BattleReserveOption {
@@ -1220,6 +1253,9 @@ message BattleSettings {
   string lynx_data = 38;
   int64 sub_type = 39;
   int64 battle_status = 40;
+  int32 battle_scene = 41;
+  string battle_id_str = 42;
+  string channel_id_str = 43;
   string initiator_open_id = 5000;
 }
 
@@ -1294,6 +1330,7 @@ message BattleUserInfo {
   int64 multi_pk_team_id = 10;
   string battle_start_desc_text = 11;
   UserImgFlipInfo user_img_flip_info = 12;
+  string room_id = 13;
 
   message BaseUserInfo {
     int64 user_id = 1;
@@ -1301,6 +1338,7 @@ message BattleUserInfo {
     Image avatar_thumb = 3;
     int32 gender = 4;
     string user_id_str = 5;
+    string sec_uid = 6;
     string open_id = 5000;
     string user_open_id_str = 5001;
   }
@@ -2087,6 +2125,7 @@ message CombinedText {
   repeated DisplayItem display_items = 1;
   SchemaInfo schema_info = 10;
   ComboInfo combo_info = 11;
+  map<string,CountdownConfig> countdown_configs = 12;
 }
 
 message ComboInfo {
@@ -2318,6 +2357,39 @@ message CornerMarkReach {
   int64 elem_type = 3;
 }
 
+message CountdownAction {
+  int32 action_type = 1;
+  int32 delay_ms = 2;
+  string toast = 3;
+  map<string,string> request_params = 4;
+  ClickMobData track_mob = 5;
+  CombinedText refresh_text = 6;
+}
+
+message CountdownConfig {
+  repeated CountdownAction end_actions = 1;
+}
+
+message CountdownItem {
+  int32 duration_ms = 1;
+  int32 format_type = 2;
+  int32 update_interval = 3;
+  int32 speed_ratio_x100 = 4;
+  string countdown_config_key = 5;
+  string color = 6;
+  int32 weight = 7;
+}
+
+message CoupleSeatProps {
+  string animation_type = 1;
+  string title = 2;
+  string sub_title = 3;
+  repeated AvatarProps avatars = 4;
+  string bg_img = 5;
+  bool show_love_icon = 6;
+  bool show_petal_icon = 7;
+}
+
 message Coupon {
   string icon = 1;
   string start_time = 2;
@@ -2466,6 +2538,7 @@ message DisplayItem {
   bool number_roll = 23;
   ImagesItem images_item = 50;
   TextItem text_item = 51;
+  CountdownItem countdown_item = 52;
   DisplayItemFormat format = 100;
 }
 
@@ -2506,6 +2579,9 @@ message EasterEggConfig {
   string task_value = 6;
   repeated string entity_id_list = 7;
   string play_id = 8;
+  bool can_advance_reward = 9;
+  string advance_finish_task_sec = 10;
+  string easter_egg_id = 11;
 
   message PeriodConfig {
     int32 stage = 1;
@@ -2545,6 +2621,8 @@ message EasterEggUpdateInfo {
 
   message RewardInfo {
     string addition_score = 1;
+    map<string,string> addition_score_map = 2;
+    map<string,string> open_addition_score_map = 5000;
   }
 }
 
@@ -3471,6 +3549,7 @@ message GiftTrayInfo {
   int32 tray_group_mode = 21;
   int32 expensive_tray_group_num = 22;
   int32 regular_tray_group_num = 23;
+  string tray_extra_text = 24;
 }
 
 message GiftUnselectedBottomInfo {
@@ -3781,6 +3860,25 @@ message GuestBattleV2PKBar {
 message GuestBattleV2UIInfo {
   Image open_animation = 1;
   Image finish_animation = 2;
+}
+
+message GuestGradeInfo {
+  int32 level = 1;
+  int32 node = 2;
+  string score = 3;
+  string name = 4;
+  Image icon = 5;
+}
+
+message GuestGradeSeasonInfo {
+  string season_id = 1;
+  string season_name = 2;
+}
+
+message GuestGradeUpgradeInfo {
+  string progress_score = 1;
+  string total_score = 2;
+  string sub_diff_score = 3;
 }
 
 message GuestLinkChannelInfo {
@@ -4098,6 +4196,13 @@ message InteractionGameContainerFlowData {
   bool flow_is_open = 1;
   int32 type = 2;
   string container_payload = 3;
+  string position = 4;
+  string url = 5;
+  string fold_url = 6;
+  string horizontal_url = 7;
+  bool can_adjust_position = 8;
+  string priority = 9;
+  string container_id = 10;
 }
 
 message InteractionPluginGamePlusContainerData {
@@ -4461,16 +4566,34 @@ message LikeDisplayConfig {
   string display_text = 2;
 }
 
+message LikeIconConfigItem {
+  repeated string icon_uris = 1;
+  int64 ticket_id = 2;
+  int64 parent_ticket_id = 3;
+  int64 camera_id = 4;
+}
+
 message LikeIconInfo {
   repeated Image icons = 1;
   map<int64,IconList> component_related_icons = 2;
   repeated EmojiMaterial emojis = 3;
   EmojiMaterial entry_emoji = 4;
   PicoVirtualLiveConfig pico_virtual_live_config = 5;
+  map<int64,LikeIconItem> camera_like_icon_items = 6;
+  LikeIconItem room_like_icon_items = 7;
 
   message IconList {
     repeated Image icons = 1;
   }
+}
+
+message LikeIconItem {
+  repeated Image icons = 1;
+  int64 ticket_id = 2;
+  string ticket_id_str = 3;
+  int64 camera_id = 4;
+  string camera_id_str = 5;
+  int64 right = 6;
 }
 
 message LinkGameInfo {
@@ -4988,6 +5111,7 @@ message ListUserLinkmicAudienceContent {
   bool is_mic_hidden = 31;
   bool is_masked = 32;
   string nick_name_under_masked = 33;
+  string nick_name_under_masked_v2 = 34;
   repeated string rank_contributor_open_ids = 5000;
 }
 
@@ -6063,6 +6187,9 @@ message PiggyBank {
   int64 max_amount = 7;
   Button button = 8;
   repeated string short_desc_list = 9;
+  repeated int64 target_amounts = 10 [packed=true];
+  int64 completed_stage = 11;
+  int64 withdraw_amount = 12;
 
   message Button {
     int32 type = 1;
@@ -6158,6 +6285,8 @@ message PopularityBoxSku {
   int64 stock_update_seconds = 6;
   string marketing_text = 7;
   int64 max_user_count = 8;
+  int64 max_interact_score = 9;
+  int32 interact_types = 10;
 }
 
 message PopularityEggButton {
@@ -6336,6 +6465,8 @@ message PreviewExposeData {
   string preview_enter_extra = 40;
   PreviewComponentConfig component_config = 41;
   PreviewAdvantageInfo preview_advantage_info = 42;
+  int32 need_preload = 43;
+  string relation_info = 44;
 
   message PreviewGuide {
     Image icon = 1;
@@ -6938,6 +7069,20 @@ message PublicScreenSpeedConf {
   int32 scroll_size = 2;
   int32 fold_size = 3;
   int32 scroll_speed = 4;
+}
+
+message PullStreamInfo {
+  repeated PullStreamItem items = 1;
+}
+
+message PullStreamItem {
+  string target_room_id = 1;
+  string target_rtc_user_id = 2;
+  int32 target_stream_index = 3;
+  string local_rtc_user_id = 4;
+  string local_user_token = 5;
+  int32 link_status = 6;
+  bool support_pull_stream = 7;
 }
 
 message PurchaseSimpleData {
@@ -7911,6 +8056,8 @@ message RoomExtra {
   int32 life_live_header_v2 = 25;
   map<string,bool> admin_op_type = 26;
   bool ecom_live_start_with_cart = 27;
+  bool vr_multi_member_only = 28;
+  repeated LikeIconConfigItem like_icon_items = 29;
 }
 
 message RoomFeedData {
@@ -8065,6 +8212,7 @@ message RoomLinkerContent {
   int64 is_anchor_background = 4;
   int64 version = 5;
   int64 live_room_mode = 6;
+  string public_stream_id = 7;
   string anchor_open_id = 5000;
 }
 
@@ -8098,6 +8246,7 @@ message RoomOthersData {
   string participant_activity = 27;
   LifeData life_data = 28;
   map<string,LabelValue> labels = 29;
+  bool anonymous_ratio_display_affected = 30;
 }
 
 message RoomPKRankInviteChangeInfo {
@@ -8964,6 +9113,7 @@ message StreamUrl {
   int32 vr_type = 26;
   int32 multi_stream_scene = 27;
   int32 resolution_select_panel_resident = 28;
+  string rtmps_push_url = 29;
   OpenStreamUrlEncrypt open_stream_url_encrypt = 5000;
 
   message StreamUrlExtra {
@@ -9095,6 +9245,7 @@ message StreamUrl {
       int32 kind = 6;
       int64 stream_id = 7;
       string stream_id_str = 8;
+      string rtmps_push_url = 9;
 
       message ResolutionParams {
         int64 width = 1;
@@ -9184,6 +9335,7 @@ message SwitchSceneData {
   PreRTCInfo pre_rtc_info = 16;
   string battle_attached_info = 17;
   string event_tracking_info = 18;
+  PullStreamInfo pull_stream_info = 19;
 }
 
 message TVStation {
@@ -9418,6 +9570,7 @@ message TextFormat {
   bool ignore_color_mapping = 9;
   int32 gradient_orientation = 10;
   repeated string gradient_colors = 11;
+  bool support_underline = 12;
 }
 
 message TextItem {

@@ -309,6 +309,11 @@ message AnchorPKPlayConfig {
   string pk_data = 3;
 }
 
+message AnchorRankView {
+  TeamInfo team_info = 1;
+  repeated RankInfo rank_list = 2;
+}
+
 message AnchorRoomDataChangeMessage {
   Common common = 1;
   bizIm.webcast.data.Text top_text = 2;
@@ -995,6 +1000,13 @@ message BattleCancelMessage {
   int64 channel_id = 2;
 }
 
+message BattleChallengeMessage {
+  Common common = 1;
+  bizIm.webcast.data.BattleChallenge challenge = 2;
+  bizIm.webcast.data.Image start_animation = 3;
+  repeated string random_challenge_titles = 4;
+}
+
 message BattleDrawPropMessage {
   Common common = 1;
   int32 status = 2;
@@ -1029,6 +1041,24 @@ message BattleFeedBackCardMessage {
 
 message BattleFrontRankMessage {
   Common common = 1;
+}
+
+message BattleGiftRecommendMessage {
+  Common common = 1;
+  string user_id = 2;
+  int32 user_identity = 3;
+  repeated Gift candidate_gift_list = 4;
+  bool skip_gift_ack_toast = 5;
+  map<string,string> track_data = 6;
+  string battle_id = 7;
+  string user_open_id = 5000;
+
+  message Gift {
+    string gift_id = 1;
+    string gift_name = 2;
+    int32 diamond_count = 3;
+    bizIm.webcast.data.Image icon = 4;
+  }
 }
 
 message BattleGuidanceMessage {
@@ -1229,6 +1259,29 @@ message BattleRejectMessage {
   string reject_open_uid = 5000;
 }
 
+message BattleRemoteInviteMessage {
+  Common common = 1;
+  string round = 2;
+  string pair_id = 3;
+  string from_user_id = 4;
+  repeated bizIm.webcast.data.BattleRemoteUser members = 5;
+  int32 wait_seconds = 6;
+  repeated bizIm.webcast.data.BattleRivalTag tags = 7;
+  string from_open_id = 5000;
+}
+
+message BattleRemoteReplyMessage {
+  Common common = 1;
+  string round = 2;
+  string pair_id = 3;
+  string from_user_id = 4;
+  repeated bizIm.webcast.data.BattleRemoteUser members = 5;
+  int32 reply_status = 6;
+  string toast = 7;
+  int32 match_wait_seconds = 8;
+  string from_open_id = 5000;
+}
+
 message BattleReserveInviteMessage {
   Common common = 1;
   int64 from_user_id = 2;
@@ -1391,6 +1444,9 @@ message BattleSettings {
   int64 steal_tower_duration = 38;
   string lynx_data = 39;
   int64 battle_status = 40;
+  int32 battle_scene = 41;
+  string battle_id_str = 42;
+  string channel_id_str = 43;
   string initiator_open_id = 5000;
 }
 
@@ -1400,6 +1456,18 @@ message BattleStateSyncMessage {
   bizIm.webcast.data.SurvivalInfo survival_info = 3;
   bizIm.webcast.data.BreakthroughInfo breakthrough_info = 4;
   int64 score_version = 5;
+}
+
+message BattleStatusMessage {
+  Common common = 1;
+  string channel_id = 2;
+  string battle_id = 3;
+  int32 status = 4;
+  int32 scene = 5;
+  int32 duration = 6;
+  int32 punish_duration = 7;
+  string start_time_ms = 8;
+  string end_time_ms = 9;
 }
 
 message BattleStealDragonMessage {
@@ -1569,6 +1637,16 @@ message BubbleConfig {
   string title = 7;
   bizIm.webcast.data.Image icon = 8;
   bizIm.webcast.data.Image landing_icon = 9;
+}
+
+message ByteLiveFrontier {
+  int32 method = 1;
+  string payLoad = 2;
+}
+
+message ByteLiveMessage {
+  Common common = 1;
+  ByteLiveFrontier frontier_message = 2;
 }
 
 message CDNSingerInfo {
@@ -2523,6 +2601,7 @@ message CrossRoomLinkInviteContent {
   string introduction_content = 6;
   int32 cross_room_kind = 7;
   int32 score_type = 8;
+  string channel_id = 9;
 }
 
 message CrossRoomLinkInviteContentLynxData {
@@ -2554,6 +2633,7 @@ message CrossRoomRTCInfoContent {
   bizIm.webcast.data.MultiChannelInfo multi_channel_info = 1;
   bizIm.webcast.data.PreRTCInfo pre_rtc_info = 2;
   bizIm.webcast.data.MultiChannelInfo other_multi_channel_info = 3;
+  bizIm.webcast.data.PullStreamInfo pull_stream_info = 4;
 }
 
 message CurrentUserInfo {
@@ -2764,7 +2844,7 @@ message DutyGiftMessage {
 
 message EasterEggDataMessage {
   Common common = 1;
-  bizIm.webcast.data.EasterEggInfo egg_info = 2;
+  bizIm.webcast.data.BattleEasterEggInfo battle_easter_egg_info = 2;
 }
 
 message EasterEggMessage {
@@ -2921,6 +3001,7 @@ message FansclubMessage {
   UpgradePrivilege upgrade_privilege = 5;
   PublicAreaCommon public_area_common = 6;
   int64 left_diamond = 7;
+  string left_deci_diamond = 8;
 
   message UpgradePrivilege {
     string content = 1;
@@ -2980,6 +3061,7 @@ message FeaturedAIMessage {
   Common common = 1;
   int64 ai_msg_type = 2;
   PublicAreaCommon public_area_common = 3;
+  string schema_url = 4;
 }
 
 message FeaturedContent {
@@ -4005,6 +4087,8 @@ message GiftSingMessage {
 message GiftSingMetaContent {
   bool is_open = 1;
   PlayInfo play_info = 2;
+  bool is_chosen_gift_invalid_force_close = 3;
+  string close_toast = 4;
 
   message CollectModeContent {
     bizIm.webcast.data.GiftSingGiftInfo gift_info = 1;
@@ -4200,6 +4284,15 @@ message GuestBattleUpdateContent {
 
 message GuestBattleV2Message {
   bizIm.webcast.data.GuestBattleV2Info battle_info = 1;
+}
+
+message GuestGradeMessage {
+  int32 msg_type = 1;
+  bizIm.webcast.data.GuestGradeInfo cur_grade = 2;
+  bizIm.webcast.data.GuestGradeInfo next_grade = 3;
+  bizIm.webcast.data.GuestGradeUpgradeInfo upgrade_info = 4;
+  bizIm.webcast.data.GuestGradeSeasonInfo season = 5;
+  string guest_id = 6;
 }
 
 message GuideMessage {
@@ -4554,6 +4647,7 @@ message InRoomBannerMessage {
   string lynx_container_url = 6;
   int32 container_type = 7;
   int32 op_type = 8;
+  string lynx_container_url_v2 = 9;
 }
 
 message InRoomBannerRedPoint {
@@ -5366,6 +5460,7 @@ message LinkMessage {
     AnchorLinkmicJoinContent anchor_linkmic_join_content = 73;
     AnchorLinkmicQuitContent anchor_linkmic_quit_content = 74;
     ReservedRoomBattleRingContent reserved_room_battle_ring_content = 75;
+    LinkerBattleLinkedListChangeContent battle_linked_list_change_content = 76;
     LinkerSysKickOutContent sys_kick_out_content = 101;
   }
 }
@@ -5528,6 +5623,7 @@ message LinkMicBattle {
   string request_source = 13;
   string event_tracking_info = 14;
   string battle_attached_info = 15;
+  int32 battle_scene = 16;
   map<string,bizIm.webcast.data.BattleUserInfo> open_user_infos = 5000;
 }
 
@@ -5552,6 +5648,7 @@ message LinkMicBattleFinish {
   string event_tracking_info = 18;
   map<int64,bizIm.webcast.data.AuxiliaryScoreInfo> auxiliary_score_infos = 19;
   LinkmicBattleFinishExtra extra = 20;
+  int32 battle_scene = 21;
   map<string,bizIm.webcast.data.BattleUserInfo> open_user_infos = 5000;
   map<string,bizIm.webcast.data.BattleStarActivityGradeChange> open_grade_changes = 5001;
 }
@@ -5812,6 +5909,9 @@ message LinkMicMethod {
   bizIm.webcast.data.BattleCloudCollaborateThroneFightInfo throne_fight_info = 110;
   string from_user_id_str = 111;
   string biz_tag = 112;
+  int32 battle_scene = 113;
+  string battle_id_str = 114;
+  bizIm.webcast.data.PullStreamInfo pull_stream_info = 115;
   string open_id = 5000;
   string invite_open_id = 5001;
   string to_open_id = 5002;
@@ -5839,7 +5939,9 @@ message LinkMicMethod {
     int32 cur_add_score = 18;
     string score_adjacent_gap_text = 19;
     repeated bizIm.webcast.data.RichText score_adjacent_gap_content = 20;
+    string user_id_str = 21;
     string open_id = 5000;
+    string open_id_str = 5001;
   }
 
   message Contributor {
@@ -5989,6 +6091,15 @@ message LinkerBattleConnectContent {
   bizIm.webcast.data.MultiChannelInfo multi_channel_info = 4;
   uint64 version = 5;
   repeated bizIm.webcast.data.ListUser anchor_user_list = 6;
+  bizIm.webcast.data.PullStreamInfo pull_stream_info = 7;
+}
+
+message LinkerBattleLinkedListChangeContent {
+  string battle_room_id = 1;
+  string battle_anchor_id = 2;
+  bizIm.webcast.data.PullStreamInfo pull_stream_info = 3;
+  string version = 4;
+  string battle_anchor_open_id = 5000;
 }
 
 message LinkerCancelContent {
@@ -6040,6 +6151,7 @@ message LinkerCloseContent {
   int32 source = 1;
   bizIm.webcast.data.BanUser ban_anchor_info = 2;
   int32 reason = 3;
+  string push_stream_url = 4;
 }
 
 message LinkerConfirmUnsilenceContent {
@@ -6225,6 +6337,7 @@ message LinkerInviteContent {
   InviterInfo inviter_info = 44;
   string peer_desc = 45;
   GameExtra game_extra = 46;
+  bizIm.webcast.data.PullStreamInfo pull_stream_info = 47;
   string biz_extra = 200;
   string from_open_id = 5000;
   string to_open_id = 5001;
@@ -6280,6 +6393,7 @@ message LinkerLeaveContent {
   repeated bizIm.webcast.data.ListUser list_users = 10;
   int64 pre_rtc_version = 11;
   bizIm.webcast.data.ClientUIInfo client_ui_info = 12;
+  bizIm.webcast.data.PullStreamInfo pull_stream_info = 13;
   string open_id = 5000;
 }
 
@@ -6380,6 +6494,7 @@ message LinkerReplyContent {
   int32 biz_type = 30;
   string game_app_id = 31;
   string event_tracking_info = 32;
+  bizIm.webcast.data.PullStreamInfo pull_stream_info = 33;
   string from_open_id = 5000;
   string to_open_id = 5001;
 }
@@ -6908,6 +7023,7 @@ message LinkmicInnoBasic {
   string icon_url = 3;
   repeated bizIm.webcast.data.LinkmicInnoSchemaInfo schema_list = 4;
   int32 layout = 9;
+  int32 inno_container_type = 10;
   string owner_id = 100;
   string play_id = 101;
   int32 status = 102;
@@ -6979,6 +7095,7 @@ message LinkmicInstructionCrossRoomLinkInviteContent {
   string introduction_content = 6;
   int32 cross_room_kind = 7;
   int32 score_type = 8;
+  string channel_id = 9;
 }
 
 message LinkmicInstructionCrossRoomLinkReplyContent {
@@ -7030,6 +7147,7 @@ message LinkmicInstructionEnterContent {
 message LinkmicInstructionFinishContent {
   bizIm.webcast.data.BanUser ban_anchor_info = 1;
   int32 finish_reason = 2;
+  string live_guest_stream_push_url = 3;
 }
 
 message LinkmicInstructionForceOpenCameraContent {
@@ -7068,10 +7186,13 @@ message LinkmicInstructionKickOutContent {
   string reason_toast = 4;
   int32 sys_kick_out_source = 5;
   repeated KickOutUserInfo kick_out_users = 6;
+  string paid_count = 7;
+  string link_duration = 8;
 
   message KickOutUserInfo {
     string to_user_id = 1;
     string to_user_linkmic_id_str = 2;
+    string live_guest_stream_push_url = 3;
   }
 }
 
@@ -7081,6 +7202,10 @@ message LinkmicInstructionLeaveContent {
   string live_guest_room_id = 3;
   int64 leave_reason = 4;
   string toast = 5;
+}
+
+message LinkmicInstructionLowBalanceForPaidLinkmicContent {
+  string toast = 1;
 }
 
 message LinkmicInstructionMessage {
@@ -7115,6 +7240,7 @@ message LinkmicInstructionMessage {
     LinkmicInstructionCrossRoomLinkStartContent cross_room_link_start_content = 36;
     LinkmicInstructionCrossRoomLinkFinishContent cross_room_link_finish_content = 37;
     LinkmicInstructionForceOpenCameraContent force_open_camera_content = 38;
+    LinkmicInstructionLowBalanceForPaidLinkmicContent low_balance_for_paid_linkmic_content = 39;
   }
 }
 
@@ -7136,6 +7262,7 @@ message LinkmicInstructionPermitContent {
   LinkmicJoinChannelData join_channel_data = 15;
   int32 silence_status = 16;
   bizIm.webcast.data.MCUContent mcu_content = 17;
+  bizIm.webcast.data.PullStreamInfo pull_stream_info = 18;
 }
 
 message LinkmicInstructionRTCActionContent {
@@ -7200,6 +7327,7 @@ message LinkmicJoinChannelData {
   int32 apply_type = 5;
   string prompt_with_earphone = 6;
   bizIm.webcast.data.LinkGameInfo link_game_info = 7;
+  bool is_paid_linkmic = 8;
 
   message DelegateSetting {
     bool show_panel = 1;
@@ -7315,6 +7443,8 @@ message LinkmicPlaymodeBMessage {
   Common common = 1;
   ArenaBattleMessage arena_battle_message = 2;
   SprintChallengeMessage sprint_challenge_message = 3;
+  PaidLinkmicMessage paid_linkmic_message = 4;
+  GuestGradeMessage guest_grade_message = 5;
 }
 
 message LinkmicPlaymodeMessage {
@@ -7769,6 +7899,7 @@ message LinkmicUIBasic {
   repeated int32 linker_features = 8 [packed=true];
   bizIm.webcast.data.MCUContent mcu_content = 9;
   map<string,RoomBasic> rival_rooms = 10;
+  string server_current_time = 11;
 
   message User {
     string user_id = 1;
@@ -7791,6 +7922,11 @@ message LinkmicUIBasic {
     string own_room_id = 24;
     string linker_room_id = 25;
     string origin_link_type = 26;
+    string join_channel_time = 27;
+    string expected_leave_time = 28;
+    string paid_count = 29;
+    int32 ai_guest_type = 30;
+    string signature = 31;
   }
 
   message EmptyPosition {
@@ -7844,6 +7980,7 @@ message LinkmicUIComponent {
     TeamfightV2PKBar teamfight_v2_pk_bar = 5;
     ArenaBattleBar_ arena_battle_bar = 6;
     SprintChallengeBarInfo sprint_challenge_bar = 7;
+    InnoContainer inno_run_container = 8;
   }
 
   message CrossRoomLinkPKBar {
@@ -7861,6 +7998,8 @@ message LinkmicUIComponent {
     repeated string top_contributor_avatar_urls = 10;
     string last_send_gift_time = 11;
     int32 win_status = 12;
+    string increased_score = 13;
+    bizIm.webcast.data.User user = 14;
   }
 
   message RoomBattlePKBar {
@@ -7898,6 +8037,9 @@ message LinkmicUIComponent {
     string increased_score = 6;
     string event_time = 7;
     bizIm.webcast.data.User user = 8;
+  }
+
+  message InnoContainer {
   }
 }
 
@@ -9348,6 +9490,32 @@ message PaidBusinessData {
   int32 right_type = 13;
 }
 
+message PaidLinkmicMessage {
+  int32 type = 1;
+  oneof content {
+    PaidLinkmicOpenContent open_content = 2;
+    PaidLinkmicCloseContent close_content = 3;
+    PaidLinkmicConfigUpdateContent config_update_content = 4;
+  }
+
+  message PaidLinkmicOpenContent {
+    bizIm.webcast.data.NormalPaidLinkmicInfo normal_paid_linkmic_info = 1;
+    bool waiting_user_need_leave = 2;
+    string waiting_user_toast = 3;
+  }
+
+  message PaidLinkmicCloseContent {
+    bool waiting_user_need_leave = 2;
+    string waiting_user_toast = 3;
+  }
+
+  message PaidLinkmicConfigUpdateContent {
+    bool waiting_user_need_leave = 1;
+    string waiting_user_toast = 2;
+    bizIm.webcast.data.NormalPaidLinkmicInfo normal_paid_linkmic_info = 3;
+  }
+}
+
 message PaidLiveDataMessage {
   Common common = 1;
   PaidBusinessData paid_business_data = 2;
@@ -9856,6 +10024,12 @@ message PreviewPromotionSyncData {
   }
 }
 
+message PrivilegeLeagueMessage {
+  Common common = 1;
+  int32 scene = 2;
+  string payload = 3;
+}
+
 message PrivilegeScreenChatMessage {
   Common common = 1;
   bizIm.webcast.data.User user = 2;
@@ -10234,6 +10408,11 @@ message RandomMagicGiftInfo {
   string user_icon = 9;
 }
 
+message RankInfo {
+  bizIm.webcast.data.User user = 1;
+  int32 rank = 2;
+}
+
 message RankItem {
   int64 rank = 1;
   string country = 2;
@@ -10272,6 +10451,7 @@ message RankListItem {
   string content = 1;
   string schema = 2;
   string entrance_extra = 3;
+  int32 style = 4;
 }
 
 message RankSeasonResult {
@@ -10792,6 +10972,11 @@ message RoomHotInfo {
 message RoomHotSentenceMessage {
   Common common = 1;
   string hot_sentence_info = 2;
+}
+
+message RoomIMRBControlMessage {
+  Common common = 1;
+  string control_info = 2;
 }
 
 message RoomImgMessage {
@@ -11664,6 +11849,12 @@ message Team {
   int32 score_addition = 6;
 }
 
+message TeamInfo {
+  string team_key = 1;
+  string team_name = 2;
+  string team_icon = 3;
+}
+
 message TeamPlayApplyListChangeMessage {
   Common common = 1;
 }
@@ -11732,6 +11923,30 @@ message TeamPlayTeamInfoMessage {
 message TeamPlayXGameCloseMessage {
   Common common = 1;
   string text = 2;
+}
+
+message TeamRankInfoMessage {
+  Common common = 1;
+  repeated AnchorRankView anchor_rank_list = 2;
+}
+
+message TeamSupportBattleView {
+  string match_key = 1;
+  string schedule_id = 2;
+  int32 vote_status = 3;
+  string battle_id = 4;
+  string battle_name = 5;
+  int64 start_time = 6;
+  repeated UserSupportTeamScoreView team_scores = 7;
+}
+
+message TeamSupportMessage {
+  Common common = 1;
+  TeamSupportBattleView current_battle = 2;
+  UserSupportGiftInfo gift_info = 3;
+  int32 play_status = 4;
+  bool is_first_support = 5;
+  bool is_schedule_end = 6;
 }
 
 message TeamfightV2Message {
@@ -12159,6 +12374,20 @@ message UserStatsMessage {
   int64 user_id = 3;
   int64 action_type = 4;
   string user_open_id = 5000;
+}
+
+message UserSupportGiftInfo {
+  int64 gift_id = 1;
+  string gift_name = 2;
+  string gift_icon = 3;
+}
+
+message UserSupportTeamScoreView {
+  string team_key = 1;
+  string team_name = 2;
+  string team_icon = 3;
+  bool anchor_selected_team = 4;
+  int64 support_value = 5;
 }
 
 message VIPInfoMessage {
