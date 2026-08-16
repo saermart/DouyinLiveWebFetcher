@@ -1,0 +1,732 @@
+syntax = "proto3";
+package bizIm.live;
+
+message AtmosphereData {
+  string img = 1;
+  string num = 2;
+  string bg_color = 3;
+  string border_color = 4;
+  int64 left_margin = 5;
+  repeated string bg_colors = 6;
+  repeated string border_colors = 7;
+  string top_img = 8;
+  URLPicture bg_img = 9;
+  URLPicture left_icon = 10;
+}
+
+message AuctionAtmosphere {
+  CountdownAtmosphere count_down = 1;
+  DigitalAtmosphere digital = 2;
+}
+
+message AuctionInfo {
+  int64 price = 1;
+  string price_label = 2;
+  int32 status = 3;
+  string jump_url = 4;
+  CurrentUserInfo current_user_info = 5;
+  repeated IncrPriceList incr_price_lists = 6;
+  string button_label = 7;
+  int64 product_id = 8;
+  int64 end_time = 9;
+  int32 biz_id = 10;
+}
+
+message AuctionSuccess {
+  string title = 1;
+  int64 product_id = 2;
+  string product_name = 3;
+  string product_pic = 4;
+  int64 price = 5;
+  int64 charge = 6;
+  int64 freight = 7;
+  int64 total = 8;
+  string button_label = 9;
+  string jump_url = 10;
+  string freight_collect = 11;
+  int64 left_payment_time = 12;
+  int32 biz_id = 13;
+  string deposit_info = 14;
+}
+
+message AuctionUpdateMessage {
+  int64 product_id = 1;
+  int64 auction_id = 2;
+  int32 action_type = 3;
+  string jump_schema = 4;
+  EndTimeRefreshInfo end_time_refresh_info = 5;
+  string price_refresh_info = 6;
+  string pre_bid_refresh_info = 7;
+
+  message EndTimeRefreshInfo {
+    int64 end_time = 1;
+    string toast = 2;
+  }
+}
+
+message AuthorConnectMessage {
+  int32 msg_type = 1;
+  string toast = 2;
+  repeated int64 ecom_linkmic_room_ids = 3 [packed=true];
+  repeated ConnectRoom linkmic_pop_rooms = 4;
+}
+
+message AuthorOrderLimitInfo {
+  ICON icon = 1;
+  string title = 2;
+  string content = 3;
+  string button = 4;
+}
+
+message BarrageBuyInfo {
+  string nick_name = 1;
+  int64 purchase_cnt = 2;
+  string text = 3;
+  string icon = 4;
+}
+
+message BenefitLabel {
+  string LeftText = 1;
+  string RightText = 2;
+  int32 TextStyle = 3;
+  int32 ColorStyle = 4;
+  int32 DivLine = 5;
+}
+
+message BidInfo {
+  string promotion_id = 1;
+}
+
+message BizActionMeta {
+  string action_name = 1;
+  string action_param = 2;
+}
+
+message BrowseInfo {
+  int32 duration = 1;
+  string task_index = 2;
+  int32 stop_duration = 3;
+}
+
+message CategoryInfo {
+  int32 id = 1;
+  string name = 2;
+  repeated string promotion_ids = 3;
+  string type = 4;
+  string unique_index = 5;
+}
+
+message CategoryRefreshMessage {
+  repeated CategoryInfo category_info = 1;
+  int64 update_ts = 2;
+  string update_toast = 3;
+
+  message CategoryInfo {
+    string unique_index = 1;
+    string name = 2;
+    int64 category_id = 3;
+    int64 category_type = 4;
+    bool need_reload = 5;
+    bool disable_append = 6;
+  }
+}
+
+message ConnectRoom {
+  int64 room_id = 1;
+  int64 author_id = 2;
+  string sec_author_id = 3;
+}
+
+message CountdownAtmosphere {
+  int64 start_time = 1;
+  int64 end_time = 2;
+  AtmosphereData data = 3;
+}
+
+message CouponActivityInfoMessage {
+  int64 activity_type = 1;
+  string before_text = 2;
+  string before_button = 3;
+  string after_text = 4;
+  string after_button = 5;
+}
+
+message CouponInfo {
+  int64 meta_id = 1;
+  int64 server_time = 2;
+  int64 countdown = 3;
+  string activity_json_str = 4;
+  int32 coupon_type = 5;
+  CouponActivityInfoMessage activity_info = 6;
+  CouponMetaInfoMessage coupon_meta = 7;
+  string meta_id_str = 8;
+}
+
+message CouponMetaInfoMessage {
+  string coupon_meta_id = 1;
+  string start_time = 2;
+  string expire_time = 3;
+  int64 period_type = 4;
+  int64 valid_period = 5;
+  string start_apply_time = 6;
+  string end_apply_time = 7;
+  string coupon_name = 8;
+  string url = 9;
+  int64 threshold = 10;
+  int64 credit = 11;
+  int64 max_apply_times = 12;
+  int64 type = 13;
+  string type_detail = 14;
+  double discount = 15;
+  string shop_id = 16;
+  int64 pay_type = 17;
+  int64 max_discount_limit = 18;
+  string shop_name = 19;
+  string type_string = 20;
+  string what_coupon = 21;
+  string coupon_string = 22;
+  int64 channel_id = 23;
+  int64 left_amount = 24;
+  int64 has_applied = 25;
+  int64 status = 26;
+  string shop_logo = 27;
+  int64 is_show = 28;
+  int64 total_amount = 29;
+  int32 live_coupon_status = 30;
+  int32 coupon_source = 31;
+  int64 user_apply_times = 32;
+  bool can_continue_apply = 33;
+  bool coupon_status = 34;
+  bool coupon_reset = 35;
+  int64 start_time_timestamp = 36;
+  int64 expire_time_timestamp = 37;
+  string avatar = 38;
+  int64 kol_uid = 39;
+  repeated int64 product_ids = 40 [packed=true];
+  int64 platform_sub_type = 41;
+  bool has_available_goods = 42;
+  string type_title = 43;
+  int64 kol_user_tag = 45;
+  string type_icon = 46;
+  int64 type_icon_width = 47;
+  int64 type_icon_height = 48;
+  string coupon_category = 49;
+  string extra_data = 50;
+}
+
+message CurrentUserInfo {
+  Img user_pic = 1;
+  string user_name = 2;
+  int64 user_id = 3;
+}
+
+message DelayParam {
+  int32 delay_strategy = 1;
+  int32 min_delay_ms = 2;
+  int32 max_delay_ms = 3;
+}
+
+message DigitalAtmosphere {
+  string frequency_key = 1;
+  int64 frequency_count = 2;
+  AtmosphereData data = 3;
+}
+
+message ElementAvatar {
+  UrlImage avatar = 1;
+}
+
+message ElementBlank {
+  int64 width = 1;
+}
+
+message ElementImage {
+  UrlImage image = 1;
+  ElementImageBubble bubble = 2;
+}
+
+message ElementImageBubble {
+  int64 height = 1;
+  int64 border_radius = 2;
+  string background_color = 3;
+  string border_color = 4;
+  string text = 5;
+  int64 font_size = 6;
+  string color = 7;
+  int64 horizontal_padding = 8;
+}
+
+message ElementLoopText {
+  repeated string texts = 1;
+  string color = 2;
+  int64 size = 3;
+  bool bold = 4;
+  int64 anim_gap = 5;
+}
+
+message ElementText {
+  string text = 1;
+  string color = 2;
+  int64 size = 3;
+  bool bold = 4;
+  UrlImage background = 5;
+  int64 max_width = 6;
+  bool ellipsis = 7;
+}
+
+message FilterSwitchChangeData {
+  bool enable = 1;
+  UpIcon up_icon = 2;
+}
+
+message GMVData {
+  string gmv = 1;
+}
+
+message HotAtmosphere {
+  string img = 1;
+  string sale_num = 2;
+  int64 type = 3;
+  string num = 4;
+  string bg_color = 5;
+  string border_color = 6;
+  int64 left_margin = 7;
+  int64 ui_type = 8;
+  repeated string bg_colors = 9;
+  repeated string border_colors = 10;
+  string top_img = 11;
+}
+
+message ICON {
+  repeated string url_list = 1;
+  int32 width = 2;
+  int32 height = 3;
+}
+
+message Img {
+  repeated string url_list = 1;
+  int32 height = 2;
+  int32 width = 3;
+}
+
+message IncrPriceList {
+  int64 price = 1;
+  int64 range = 2;
+}
+
+message IntelligentPopMessage {
+  int32 msg_type = 1;
+  int32 bubble_type = 2;
+  int64 promotion_id = 3;
+  DelayParam delay_param = 4;
+  map<string,string> params = 5;
+  string list_top_path = 10;
+  string pop_path = 11;
+}
+
+message InteractionAvatar {
+  repeated string url_list = 1;
+  int32 width = 2;
+  int32 height = 3;
+}
+
+message InteractionContent {
+  InteractionContentCheck check = 1;
+  int32 priority = 2;
+  int32 loop_count = 3;
+  repeated InteractionElement content = 4;
+  map<string,string> event_param = 5;
+  repeated ListTopInteractionRow rows = 6;
+  repeated string bg_colors = 7;
+  MessageProduct product = 8;
+  ListAction action = 9;
+}
+
+message InteractionContentCheck {
+  int64 product_id = 1;
+  int32 index = 2;
+}
+
+message InteractionData {
+  bool full = 1;
+  repeated InteractionContent contents = 2;
+}
+
+message InteractionElement {
+  int32 element_type = 1;
+  string text = 2;
+  string text_color = 3;
+  InteractionAvatar avatars = 4;
+  int32 blank_width = 5;
+  int32 text_size = 6;
+  ElementText text_v2 = 20;
+  ElementBlank blank_v2 = 21;
+  ElementAvatar avatars_v2 = 23;
+  ElementImage image_v2 = 24;
+  ElementLoopText loop_text = 29;
+}
+
+message JumpActionMeta {
+  string url = 1;
+  int64 append_params_type = 2;
+}
+
+message JumpUrl {
+  string key = 1;
+  string text = 2;
+  string url = 3;
+}
+
+message ListAction {
+  int64 action_type = 1;
+  BizActionMeta biz_action = 2;
+  JumpActionMeta jump_action = 3;
+}
+
+message ListTopInteractionRow {
+  repeated InteractionElement content = 1;
+}
+
+message LiveCommonMessage {
+  int32 msg_type = 1;
+  int64 screenshot_timestamp = 2;
+  RoomTagOfflineInfo room_tag_offline_info = 3;
+  FilterSwitchChangeData filter_switch_change_data = 4;
+  GMVData gmv_data = 5;
+}
+
+message LiveHighHeatMessage {
+  RedirectData redirect_data = 1;
+  string route_rule = 2;
+}
+
+message LiveInteractionMessage {
+  int32 msg_type = 1;
+  BarrageBuyInfo barrage_buy_info = 2;
+  InteractionData interaction_data = 3;
+}
+
+message LiveMarketingMessage {
+  int32 msg_type = 1;
+  repeated int64 product_ids = 2 [packed=true];
+  AuctionSuccess auction_success = 3;
+  AuctionInfo auction_info = 4;
+  RedpackActivityInfo redpack_activity_info = 5;
+  WinLotteryInfo win_lotteryinfo = 6;
+  LotteryInfoList lottery_info_list = 7;
+  CouponInfo coupon_info = 8;
+  TaskInfo task_info = 9;
+}
+
+message LivePopMessage {
+  int32 msg_type = 1;
+  int32 bubble_type = 2;
+  int64 promotion_id = 3;
+  HotAtmosphere hot_atmosphere = 4;
+  DelayParam delay_param = 5;
+  PopProductInfo product_info = 6;
+}
+
+message LiveSellerMessage {
+  int32 msg_type = 1;
+  AuthorOrderLimitInfo author_order_limit_info = 2;
+  repeated StatsData list_room_stats_data = 3;
+  PopupInfo flash_popup_info = 4;
+}
+
+message LiveTargetFlashMessage {
+  string schema = 1;
+  int64 create_time = 2;
+  int64 promotion_id = 3;
+}
+
+message LotteryInfoList {
+  string activity_id = 1;
+  int64 task_type = 2;
+  int64 open_time = 3;
+  int64 user_activity_status = 4;
+  string win_record_id = 5;
+  string result_label = 6;
+  string button_label = 7;
+  repeated string text = 8;
+  string jump_url = 9;
+  int64 lottery_type = 10;
+  string elastic_title = 11;
+  BenefitLabel benefit_label = 12;
+  string extra_info = 99;
+}
+
+message MessageProduct {
+  ProductCover cover = 1;
+  bool show_index = 2;
+  int32 index = 3;
+}
+
+message PopProductInfo {
+  int64 promotion_id = 1;
+  int64 product_id = 2;
+  int64 explain_time = 3;
+}
+
+message PopupInfo {
+  string title = 1;
+  string text = 2;
+  repeated JumpUrl urls = 3;
+}
+
+message ProductAtmosphere {
+  int32 atmosphere_type = 1;
+  ProductNumAtmosphere num_atmosphere = 2;
+}
+
+message ProductCover {
+  repeated string url_list = 1;
+  int64 width = 2;
+  int64 height = 3;
+}
+
+message ProductInfo {
+  int64 promotion_id = 1;
+  int32 index = 2;
+  repeated int64 target_flash_uids = 3 [packed=true];
+  int64 explain_type = 4;
+}
+
+message ProductListRefreshMessage {
+  int64 update_ts = 1;
+  string update_toast = 2;
+}
+
+message ProductListUpdateMessage {
+  int64 update_timestamp = 1;
+  string update_toast = 2;
+  repeated ProductInfo update_product_info = 3;
+  int64 total = 4;
+  repeated CategoryInfo update_category_info = 5;
+  int32 msg_type = 6;
+}
+
+message ProductNumAtmosphere {
+  URLPicture left_icon = 1;
+  URLPicture background = 2;
+  int64 type = 3;
+  string num = 4;
+}
+
+message ProductRefreshMessage {
+  int64 promotion_id = 1;
+  int64 product_id = 2;
+  int64 channel_type = 3;
+  int64 channel_id = 4;
+  int64 update_ts = 5;
+  int32 action_type = 6;
+  RequestInfo request_info = 7;
+  ProductInfo product_info = 8;
+  HotAtmosphere hot_atmosphere = 9;
+  AuctionInfo auction_info = 10;
+  AuctionAtmosphere auction_atmosphere = 11;
+  AtmosphereInfo atmosphere_info = 12;
+
+  message RequestInfo {
+    map<int32,ProductRefreshMessage.RequestInfo.Request> list = 1;
+    map<int32,ProductRefreshMessage.RequestInfo.Request> pop = 2;
+    map<int32,ProductRefreshMessage.RequestInfo.Request> intro = 3;
+
+    message Request {
+      string path = 1;
+      map<string,string> params = 2;
+      DelayParam delay_param = 3;
+    }
+  }
+
+  message ProductInfo {
+    string title = 1;
+    string cover = 2;
+  }
+
+  message AuctionInfo {
+    int64 price = 1;
+    string price_label = 2;
+    AuctionAtmosphere auction_atmosphere = 3;
+    int64 end_time = 4;
+    ProductRefreshMessage.AuctionInfo.AuctionUser current_user = 5;
+    string intro_price_label = 6;
+
+    message AuctionUser {
+      bool is_self = 1;
+      string name = 2;
+      string profile = 3;
+    }
+  }
+
+  message AtmosphereInfo {
+    map<int32,ProductAtmosphere> atmosphere = 1;
+  }
+}
+
+message ProductUpdateMessage {
+  repeated int64 updated_product_ids = 1 [packed=true];
+  int32 update_type = 2;
+  int64 promotion_id = 3;
+  UpdatedProductInfo updated_product_info = 4;
+  bool sold_out = 5;
+  UpdatedCouponInfo updated_coupon_info = 6;
+  UpdatedCampaignInfo updated_campaign_info = 7;
+  int64 update_timestamp = 8;
+  UpdatedSkuInfo update_sku_info = 9;
+  UpdatedCommentaryVideoInfo updated_commentary_video_info = 10;
+  UpdatedGroupInfo updated_group_info = 11;
+  HotAtmosphere hot_atmosphere = 12;
+  bool can_sold = 13;
+  InteractionData promotion_header_interaction = 14;
+  BidInfo bid_info = 15;
+}
+
+message RedirectData {
+  map<string,string> route = 1;
+}
+
+message RedpackActivityInfo {
+  int64 redpack_type = 1;
+  string redpack_activity_id = 2;
+  string redpack_activity_name = 3;
+  int64 start_apply_time = 4;
+  int64 end_apply_time = 5;
+  int64 preheat_time = 6;
+  int64 total_amount = 7;
+  string author_avatar_url = 8;
+  string author_name = 9;
+  string pendant_background_url = 10;
+  string redpack_front_background_url = 11;
+  string redpack_label = 12;
+  string redpack_after_background_url = 13;
+  string redpack_after_belt_url = 14;
+  int64 scatter_time = 15;
+  int64 server_time = 16;
+  int64 max_amount = 17;
+  int64 show_type = 18;
+  string shorttouch_pendant_background_url = 19;
+  string shorttouch_pendant_icon_url = 20;
+  string shorttouch_lottie_url = 21;
+}
+
+message RoomTagOfflineInfo {
+  int64 tag_type = 1;
+  string user_toast = 2;
+}
+
+message SkuInfo {
+  string sku_id = 1;
+  int64 stock_num = 2;
+  int64 price = 3;
+  int64 coupon_price = 4;
+}
+
+message StatsData {
+  string value = 1;
+  string unit = 2;
+  int32 type = 3;
+}
+
+message TaskInfo {
+  int32 task_type = 1;
+  int32 task_status = 2;
+  string report_event = 3;
+  BrowseInfo browse_task_info = 4;
+}
+
+message URLPicture {
+  repeated string url_list = 1;
+  int64 width = 2;
+  int64 height = 3;
+}
+
+message UpIcon {
+  string name = 1;
+  string up_icon = 2;
+  string up_desc = 3;
+  string public_screen_notice = 4;
+}
+
+message UpdatedCampaignInfo {
+  bool is_valid = 1;
+  string label = 2;
+  string price = 3;
+  string pic = 4;
+  string start_time = 5;
+  string end_time = 6;
+  string time_start_label = 7;
+  string time_end_label = 8;
+  string user_limit = 9;
+  string is_preheat = 10;
+  string campaign_id = 11;
+}
+
+message UpdatedCommentaryVideoInfo {
+  int64 action = 1;
+}
+
+message UpdatedCouponInfo {
+  string tag = 1;
+  string coupon_url = 2;
+  string coupon_applet = 3;
+  bool is_valid = 4;
+  string coupon_meta_id = 5;
+}
+
+message UpdatedGroupInfo {
+  repeated string avatar_list = 1;
+  int64 joined = 2;
+  int64 group_size = 3;
+  int64 persent = 4;
+}
+
+message UpdatedProductInfo {
+  int64 price = 1;
+  string title = 2;
+  string cover = 3;
+  int64 status = 4;
+  string pop_upicon = 5;
+}
+
+message UpdatedSkuInfo {
+  map<string,SkuInfo> skus = 1;
+  int64 min_price = 2;
+  int64 max_price = 3;
+  int64 unuse_min_price = 4;
+  int64 coupon_price = 5;
+}
+
+message UrlImage {
+  repeated string url_list = 1;
+  int64 width = 2;
+  int64 height = 3;
+}
+
+message WinLotteryAlert {
+  string title = 1;
+  string content = 2;
+  string button_label = 3;
+}
+
+message WinLotteryInfo {
+  string title = 1;
+  string name = 2;
+  string img = 3;
+  string button_label = 4;
+  string win_record_id = 5;
+  string activity_id = 6;
+  bool is_addressed = 7;
+  WinLotteryAlert alert = 8;
+  bool is_win = 9;
+  string jump_url = 10;
+  int64 product_id = 11;
+  repeated int64 activity_price = 12 [packed=true];
+  int64 buy_time = 13;
+  int64 lottery_type = 14;
+  string product_id_str = 15;
+  LotteryInfoList lottery_info_list = 16;
+  int64 draw_prize_type = 17;
+  string button_bottom_desc = 18;
+  string extra_info = 99;
+}

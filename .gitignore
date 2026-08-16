@@ -7,3 +7,6 @@ package-lock.json
 .venv
 .DS_Store
 *.pyc
+*.log
+live.*.json
+.vscode/
