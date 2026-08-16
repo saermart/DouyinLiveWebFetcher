@@ -203,6 +203,8 @@ class DouyinLiveWebFetcher:
 
     def stop(self):
         with self.cond_stopped:
+            if self.stopped:
+                return
             self.stopped = True
             self.cond_stopped.notify()
         self.ws.close()
