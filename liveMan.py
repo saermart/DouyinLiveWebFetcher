@@ -154,6 +154,7 @@ class DouyinLiveWebFetcher:
         self.live_url = "https://live.douyin.com/"
         self.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0"
         self.headers = {'User-Agent': self.user_agent}
+        self.ws: websocket.WebSocketApp = None
 
         self.douyin_proto = {
             "bizIm_live": importlib.import_module("protobuf.douyin.bizIm.live_pb2"),
@@ -162,7 +163,6 @@ class DouyinLiveWebFetcher:
             "transport_im": importlib.import_module("protobuf.douyin.transport.webcast.im_pb2"),
         }
 
-        self.stopped = True
         self.cond_stopped = Condition()
 
         self.msg_log_file_name = None
@@ -178,6 +178,22 @@ class DouyinLiveWebFetcher:
         self.msg_log_file = open(self.msg_log_file_name, mode='wt', encoding='utf8', buffering=1)
         self.cascade_log_file = CascadeWriter(self.msg_log_file, self.json_log_file)
 
+    def _finish_log_files(self):
+        if self.msg_log_file_name is None:
+            return
+
+        def compress_log_files(*files: List[str]):
+            for f in files:
+                logger.debug(f"正在压缩文件 '{f}'")
+                compress_file(f, f + '.zstd', level=11)
+                logger.debug(f"文件压缩完成 '{f}.zstd'")
+
+        self.json_log_file.close()
+        self.msg_log_file.close()
+        self.cascade_log_file = None
+        threading.Thread(target=compress_log_files, args=(self.msg_log_file_name, self.json_log_file_name)).start()
+        self.msg_log_file_name, self.json_log_file_name = None, None
+
     def log_msg(self, *values: object, sep: str | None = " ", end: str | None = "\n"):
         print(*values, sep=sep, end=end, file=self.msg_log_file)
 
@@ -189,43 +205,48 @@ class DouyinLiveWebFetcher:
 
     def start(self, display_text: str, data: str):
         self._init_log_files()
-        self.stopped = False
         self.log_json(timestamp_to_readable_str(int(time.time() * 1000), True))
         self.log_json(data)
         self.log_msg(f'【直播间】{display_text}')
         self._connectWebSocket()
 
     def stop(self):
-        with self.cond_stopped:
-            self.stopped = True
-            self.cond_stopped.notify()
         self.ws.close()
+        with self.cond_stopped:
+            self.cond_stopped.notify_all()
 
-        def compress_log_files(*files: List[str]):
-            for f in files:
-                logger.debug(f"正在压缩文件 '{f}'")
-                compress_file(f, f + '.zstd', level=11)
-                logger.debug(f"文件压缩完成 '{f}.zstd'")
-
-        threading.Thread(target=compress_log_files, args=(self.msg_log_file_name, self.json_log_file_name)).start()
-        self.msg_log_file_name, self.json_log_file_name = None, None
-        self.json_log_file.close()
-        self.msg_log_file.close()
-        self.cascade_log_file = None
+    def cleanup(self):
+        if self.ws:
+            self.ws.close()
+        self._finish_log_files()
 
     def run_forever(self, poll_interval=5):
         while True:
             try:
-                status, display_text, data = self.get_room_status()
+                status, display_text, data = self.get_room_status(retries=100)
                 if status == 0:
                     self.start(display_text, data)
                 elif status == 2:
+                    logger.debug(json.dumps(data, ensure_ascii=False))
                     logger.info('未开播或直播已结束')
                 else:
                     logger.info('直播间状态未知')
+            except KeyboardInterrupt:
+                return
+            except BaseException:
+                logger.error(traceback.format_exc())
+            finally:
+                self.cleanup()
+
+            try:
                 time.sleep(poll_interval)
             except KeyboardInterrupt:
                 return
+
+    def get_ttwid(self):
+        response = requests.get(self.live_url, headers=self.headers)
+        response.raise_for_status()
+        return response.cookies.get('ttwid')
 
     @property
     def ttwid(self):
@@ -296,16 +317,16 @@ class DouyinLiveWebFetcher:
         _a_bogus = ctx.call("get_ab", url, self.user_agent)
         return _a_bogus
 
-    def get_room_status(self) -> Tuple[int, str, str]:
+    def get_room_status(self, retries=30) -> Tuple[int, str, str]:
         """
         获取直播间开播状态:
         room_status: 2 直播已结束
         room_status: 0 直播进行中
         """
         logger.debug('正在获取直播间开播状态')
-        try:
-            nonce = self.get_ac_nonce()
-            for _ in range(10):
+        for retry in range(retries):
+            try:
+                nonce = self.get_ac_nonce()
                 msToken = generateMsToken()
                 signature = self.get_ac_signature(nonce)
                 url = (
@@ -323,24 +344,29 @@ class DouyinLiveWebFetcher:
                 headers = self.headers.copy()
                 headers.update({
                     'Referer': f'https://live.douyin.com/{self.live_id}',
-                    'Cookie': f'ttwid={self.ttwid};__ac_nonce={nonce}; __ac_signature={signature}',
+                    'Cookie': f'ttwid={self.get_ttwid()};__ac_nonce={nonce}; __ac_signature={signature}',
                 })
                 resp = self.session.get(url, headers=headers, allow_redirects=3)
-                if resp.status_code == 200 and len(resp.content) > 0:
-                    break
 
-            data = resp.json().get('data', None)
-            if not data:
-                return None
-            display_text = ''
-            if data.get('room_status', None) == 0:
-                nickname, title = data['user']['nickname'], data['data'][0]['title']
-                room_view = data['data'][0]['room_view_stats']['display_long_anchor']
-                display_text = f'{nickname} 正在直播：{title} │ {room_view}'
-                logger.info(display_text)
-            return data.get('room_status', None), display_text, resp.text
-        except BaseException:
-            logger.error(traceback.format_exc())
+                if (resp.status_code != 200) or len(resp.content) == 0:
+                    continue
+
+                data = resp.json().get('data', None)
+                display_text = ''
+                if data.get('room_status', None) == 0:
+                    nickname, title = data['user']['nickname'], data['data'][0]['title']
+                    room_view = data['data'][0]['room_view_stats']['display_long_anchor']
+                    display_text = f'{nickname} 正在直播：{title} │ {room_view}'
+                    logger.info(display_text)
+                return data.get('room_status', None), display_text, resp.text
+
+            except KeyboardInterrupt:
+                raise
+            except BaseException:
+                logger.error(traceback.format_exc())
+
+            self.session = requests.Session()  # reset session
+            time.sleep((retry % 3) * 500)
 
     def read_cookies_file(self):
         """
@@ -422,11 +448,6 @@ class DouyinLiveWebFetcher:
         threading.Thread(target=self._sendHeartbeat).start()
 
     def _wsOnMessage(self, ws, message):
-        with self.cond_stopped:
-            if not self.stopped:
-                self._onMessage(ws, message)
-
-    def _onMessage(self, ws, message):
         """
         接收到数据
         :param ws: websocket实例
