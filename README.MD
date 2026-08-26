@@ -35,7 +35,7 @@
 
 app图：
 
-![桌面版](.\dylive.png)
+![dylive](https://beeimg.us.ci/temp/e60cc2a1d5aa7b39ca4b9e42b4ec50e5.png)
 
 ## 抓取样例：
 ```text
