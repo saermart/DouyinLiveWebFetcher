@@ -35,7 +35,7 @@
 
 app图：
 
-[![dylive](https://beeimg.us.ci/temp/e60cc2a1d5aa7b39ca4b9e42b4ec50e5.png)](https://beeimg.us.ci/temp/e60cc2a1d5aa7b39ca4b9e42b4ec50e5.png)
+![dylive.png](https://picui.ogmua.cn/s1/2026/09/08/6a9fbfe0190be.webp)
 
 ## 抓取样例：
 ```text
@@ -103,4 +103,4 @@ app图：
 
 ## 如果觉得对你有帮助，不吝打赏~
 
-[![alipay](https://beeimg.us.ci/temp/adb1bc2dccde9560b0c389df6e02595f.jpg)](https://beeimg.us.ci/temp/adb1bc2dccde9560b0c389df6e02595f.jpg)
+![alipay.jpg](https://picui.ogmua.cn/s1/2026/09/08/6a9fbf7abe0a7.webp)
