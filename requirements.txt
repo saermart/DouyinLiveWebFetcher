@@ -5,3 +5,4 @@ PyExecJS==1.5.1
 mini_racer==0.12.4
 protoletariat==3.3.10
 backports.zstd ; python_version<'3.14'
+rocksdict==0.3.29

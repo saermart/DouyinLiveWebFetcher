@@ -37,7 +37,7 @@ import requests
 from py_mini_racer import MiniRacer
 
 import google.protobuf.json_format as gp_json_format
-import google.protobuf.message as gp_message
+from google.protobuf.message import Message
 
 import protobuf.douyin.bizIm.webcast.data_pb2 as webcast_data
 import protobuf.douyin.bizIm.live_pb2 as bizIm_live
@@ -48,6 +48,7 @@ from ac_signature import get__ac_signature
 from cascadewriter import CascadeWriter
 from renderer import render_text
 from compression import compress_file
+from user_db import UserDB, getObjectFromMessageRecursive
 
 logging.basicConfig(
     level=os.environ.get('LOG_LEVEL', 'DEBUG').upper(),
@@ -163,24 +164,23 @@ class DouyinLiveWebFetcher:
             "webcast_im": importlib.import_module("protobuf.douyin.bizIm.webcast.im_pb2"),
             "transport_im": importlib.import_module("protobuf.douyin.transport.webcast.im_pb2"),
         }
+        self.user_db: UserDB = None
 
         self.cond_stopped = Condition()
+        self.live_name: str = None
 
-        self.msg_log_file_name = None
-        self.json_log_file_name = None
-
-    def _init_log_files(self):
-        if self.msg_log_file_name:
+    def _init_live_files(self):
+        if self.live_name:
             return
-        file_name = f"live.{self.live_id}.{time.strftime('%y%m%d_%H%M%S')}"
-        self.json_log_file_name = file_name + '.json'
-        self.msg_log_file_name = file_name + '.log'
-        self.json_log_file = open(self.json_log_file_name, mode='wt', encoding='utf8', buffering=1)
-        self.msg_log_file = open(self.msg_log_file_name, mode='wt', encoding='utf8', buffering=1)
+        self.live_name = f"live.{self.live_id}.{time.strftime('%y%m%d_%H%M%S')}"
+        self.json_log_file = open(self.live_name + '.json', mode='wt', encoding='utf8', buffering=1)
+        self.msg_log_file = open(self.live_name + '.log', mode='wt', encoding='utf8', buffering=1)
         self.cascade_log_file = CascadeWriter(self.msg_log_file, self.json_log_file)
 
-    def _finish_log_files(self):
-        if self.msg_log_file_name is None:
+        self.user_db = UserDB(self.live_name + '.user')
+
+    def _finish_live_files(self):
+        if self.live_name is None:
             return
 
         def compress_log_files(*files: List[str]):
@@ -192,8 +192,10 @@ class DouyinLiveWebFetcher:
         self.json_log_file.close()
         self.msg_log_file.close()
         self.cascade_log_file = None
-        threading.Thread(target=compress_log_files, args=(self.msg_log_file_name, self.json_log_file_name)).start()
-        self.msg_log_file_name, self.json_log_file_name = None, None
+        threading.Thread(target=compress_log_files, args=(self.live_name + '.log', self.live_name + '.json')).start()
+
+        self.user_db = None
+        self.live_name = None
 
     def log_msg(self, *values: object, sep: str | None = " ", end: str | None = "\n"):
         print(*values, sep=sep, end=end, file=self.msg_log_file)
@@ -204,11 +206,17 @@ class DouyinLiveWebFetcher:
     def cascade_log(self, *values: object, sep: str | None = " ", end: str | None = "\n"):
         print(*values, sep=sep, end=end, file=self.cascade_log_file)
 
-    def start(self, display_text: str, data: str):
-        self._init_log_files()
+    def nickname_or_id(self, id_: int | str) -> str:
+        u = self.user_db[int(id_)]
+        return u.nickname if u else str(id_)
+
+    def start(self, display_text: str, text: str, data: dict):
+        self._init_live_files()
         self.log_json(format_readable_time(int(time.time() * 1000), True))
-        self.log_json(data)
+        self.log_json(text)
         self.log_msg(f'【直播间】{display_text}')
+
+        self.user_db.updateFromDict(data['user'])
         self._connectWebSocket()
 
     def stop(self):
@@ -219,14 +227,15 @@ class DouyinLiveWebFetcher:
     def cleanup(self):
         if self.ws:
             self.ws.close()
-        self._finish_log_files()
+        self._finish_live_files()
 
     def run_forever(self, poll_interval=5):
         while True:
             try:
-                status, display_text, data = self.get_room_status(retries=100)
+                data, display_text, text = self.get_room_status(retries=100)
+                status = data.get('room_status', None)
                 if status == 0:
-                    self.start(display_text, data)
+                    self.start(display_text, text, data)
                 elif status == 2:
                     logger.debug(json.dumps(data, ensure_ascii=False))
                     logger.info('未开播或直播已结束')
@@ -318,7 +327,7 @@ class DouyinLiveWebFetcher:
         _a_bogus = ctx.call("get_ab", url, self.user_agent)
         return _a_bogus
 
-    def get_room_status(self, retries=30) -> Tuple[int, str, str]:
+    def get_room_status(self, retries=30) -> Tuple[dict, str, str]:
         """
         获取直播间开播状态:
         room_status: 2 直播已结束
@@ -359,7 +368,7 @@ class DouyinLiveWebFetcher:
                     room_view = data['data'][0]['room_view_stats']['display_long_anchor']
                     display_text = f'{nickname} 正在直播：{title} │ {room_view}'
                     logger.info(display_text)
-                return data.get('room_status', None), display_text, resp.text
+                return data, display_text, resp.text
 
             except KeyboardInterrupt:
                 raise
@@ -573,7 +582,7 @@ class DouyinLiveWebFetcher:
         self.stop()
         logger.info("WebSocket connection closed.")
 
-    def _MessageToJson(self, m: gp_message.Message):
+    def _MessageToJson(self, m: Message):
         return gp_json_format.MessageToJson(m, preserving_proto_field_name=True, ensure_ascii=False, indent=None)
 
     def _tryGetMethodClass(self, module, method: str):
@@ -624,10 +633,56 @@ class DouyinLiveWebFetcher:
                 '------------\n'.join(tb_list)
         raise Exception(f"Unknown method '{method}'.{tb_hint}")
 
-    def _parseFromString(self, class_: str, data: bytes, module=webcast_im) -> gp_message.Message:
-        m = self._tryGetMethodClass(module, class_)()
+    def gatherUsers(self, m: Message, method: str):
+        method = method.removeprefix('Webcast')
+
+        user_object_field = {
+            'AssetEffectUtilMessage': ['common.user'],
+            'AudioChatMessage': ['user', 'rtf_content.pieces[].user_value.user'],
+            'BindingGiftMessage': ['msg.user'],
+            'ChatMessage': ['user', 'rtf_content.pieces[].user_value.user', 'rtf_content_v2.pieces[].user_value.user'],
+            'EasterEggDataMessage': ['battle_easter_egg_info.user_map{}'],
+            'EmojiChatMessage': ['user'],
+            'ExhibitionChatMessage': ['display_text.pieces[].user_value.user'],
+            'FansclubMessage': ['user'],
+            'GiftMessage': ['user', 'to_user'],
+            'LikeMessage': ['user'],
+            'LinkMessage': None,  # None for recursive way
+            'LinkMicArmiesMethod': ['user_armies_list[].user_armies[]'],
+            'LinkMicBattleFinishMethod': ['battle_armies[].rank_list[]', 'user_infos{}.user'],
+            'LinkMicBattleMethod': ['user_infos{}.user'],
+            'LinkmicPlayModeUpdateScoreMessage': ['from_user', 'to_user'],
+            'LuckyBoxMessage': ['user'],
+            # 'MemberMessage': ['user'], # Do we really need to know about random users ?
+            'NotifyEffectMessage': ['text_v2.display_items[].text_item.text.pieces[].user_value.user'],
+            'PrivilegeScreenChatMessage': ['user'],
+            'RoomMessage': ['common.display_text.pieces[].user_value.user'],
+            'RoomNotifyMessage': ['common.display_text.pieces[].user_value.user'],
+            'RoomRankMessage': ['audience_ranks[].user'],
+            'RoomUserSeqMessage': ['ranks[].user'],
+            'ScreenChatMessage': ['user'],
+            'SocialMessage': ['user'],
+        }
+        if method == 'MemberMessage':
+            return self.user_db.updateMany([
+                u for u in getObjectFromMessageRecursive(m, [webcast_data.User]) if u.pay_grade.level > 10
+            ])
+        elif method not in user_object_field:
+            return
+        paths = user_object_field[method]
+        count_before = self.user_db.count()
+        if paths is None:
+            self.user_db.updateFromMessageRecursive(m)
+        else:
+            self.user_db.updateFromFields(m, paths)
+        count_after = self.user_db.count()
+        logger.debug(f'Added {count_after - count_before} users from {method}. Now {count_after}.')
+
+    def _parseFromString(self, class_: str, data: bytes, module=webcast_im) -> Message:
+        m: Message = self._tryGetMethodClass(module, class_)()
         if m:
             m.ParseFromString(data)
+            self.gatherUsers(m, class_)
             return m
         else:
             raise Exception(f"Unknown method '{class_}'")
@@ -752,7 +807,8 @@ class DouyinLiveWebFetcher:
             candidate_hint = f'，{candidate_num}人参与'
         except BaseException:
             pass
-        self.log_msg(f"【福袋抽奖结果】{len(m.user_ids)}人中奖{candidate_hint}。中奖用户ID：{' │ '.join([str(i) for i in m.user_ids])}")
+        self.log_msg(
+            f"【福袋抽奖结果】{len(m.user_ids)}人中奖{candidate_hint}。中奖用户（或ID）：{' │ '.join([self.nickname_or_id(i) for i in m.user_ids])}")
 
     def _parseLinkMessage(self, payload):
         m = self._parseFromString('LinkMessage', payload)
@@ -866,7 +922,8 @@ class DouyinLiveWebFetcher:
     def _parseAnchorLinkmicSilenceMessage(self, payload):
         m = self._parseFromString('AnchorLinkmicSilenceMessage', payload)
         silence_action = {1: '静音', 2: '取消静音'}.get(m.silence_action)
-        self.log_msg(f'【静音】{m.from_user_id} 将 {m.to_user_id} {silence_action} 了')
+        self.log_msg(
+            f'【静音】{self.nickname_or_id(m.from_user_id)} 将 {self.nickname_or_id(m.to_user_id)} {silence_action} 了')
 
     def _parseNotifyMessage(self, payload):
         m = self._parseFromString('NotifyMessage', payload)
@@ -930,8 +987,11 @@ class DouyinLiveWebFetcher:
     def _parseLinkMicArmiesMethod(self, payload):
         m = self._parseFromString('LinkMicArmiesMethod', payload)
         user_armies_list = []
-        for o in m.user_armies_list:
-            user_armies_list.append(' │ '.join([u.nickname for u in o.user_armies] or ['(空)']))
+        for user_id, user_armies in m.user_armies_map.items():
+            user_armies_list.append(
+                self.nickname_or_id(user_id) + '：' +
+                ' │ '.join([f'{u.nickname}({u.score})' for u in user_armies.user_armies] or ['(空)'])
+            )
         self.log_msg('【PK 战队】 ' + ' ┃ '.join(user_armies_list))
 
     def _parseTaskCenterEntranceMessage(self, payload):
@@ -974,21 +1034,29 @@ class DouyinLiveWebFetcher:
         self.log_msg(
             '【PK】' +
             ' │ '.join([pk_user(info) for info in m.user_infos.values()]) +
-            f' 由{m.battle_settings.initiator_id}发起'
+            f' 由{self.nickname_or_id(m.battle_settings.initiator_id)}发起'
         )
 
     def _parseLinkMicBattleFinishMethod(self, payload):
         m = self._parseFromString('LinkMicBattleFinishMethod', payload)
 
-        self.log_msg('【PK 分数】' + ' │ '.join([f'{o.user_id}: {o.score}' for o in m.battle_scores]))
+        self.log_msg(
+            '【PK 结束分数】' +
+            ' │ '.join([
+                f'{self.nickname_or_id(o.user_id)}: {o.score}' for o in m.battle_scores
+            ])
+        )
 
         if '获得音浪' in m.battle_settings.lynx_data:
             lynx_data = json.loads(m.battle_settings.lynx_data)
             battle_finish_data = lynx_data.get('battle_finish_data', None)
 
             self.log_msg(
-                '【PK 音浪】' +
-                ' │ '.join([user_id + ': ' + data.get('summary_value', '（未知）') for user_id, data in battle_finish_data.items()])
+                '【PK 结束音浪】' +
+                ' │ '.join([
+                    self.nickname_or_id(user_id) + ': ' + data.get('summary_value', '（未知）')
+                    for user_id, data in battle_finish_data.items()
+                ])
             )
 
     def _parseProfileViewMessage(self, payload):
