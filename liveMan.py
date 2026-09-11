@@ -366,7 +366,7 @@ class DouyinLiveWebFetcher:
                 if data.get('room_status', None) == 0:
                     nickname, title = data['user']['nickname'], data['data'][0]['title']
                     room_view = data['data'][0]['room_view_stats']['display_long_anchor']
-                    display_text = f'{nickname} 正在直播：{title} │ {room_view}'
+                    display_text = f'{nickname}\u200b 正在直播：{title} │ {room_view}'
                     logger.info(display_text)
                 return data, display_text, resp.text
 
@@ -695,13 +695,13 @@ class DouyinLiveWebFetcher:
         m = self._parseFromString('ChatMessage', payload)
         u = m.user
         badge = f"({u.pay_grade.level} {u.fans_club.data.level})"
-        self.log_msg(f"【聊天】{badge} {m.user.nickname}：{m.content}")
+        self.log_msg(f"【聊天】{badge} {m.user.nickname}\u200b：{m.content}")
 
     def _parseGiftMsg(self, payload):
         """礼物消息"""
         m = self._parseFromString('GiftMessage', payload)
         repeat_end_hint = '（连击结束）' if (m.repeat_end and m.combo_count > 1) else ''
-        self.log_msg(f"【礼物】{m.user.nickname} 送出了 {m.gift.name} ×{m.combo_count}{repeat_end_hint}")
+        self.log_msg(f"【礼物】{m.user.nickname}\u200b 送出了 {m.gift.name} ×{m.combo_count}{repeat_end_hint}")
 
     def _parseBindingGiftMessage(self, payload):
         """礼物消息"""
@@ -711,7 +711,7 @@ class DouyinLiveWebFetcher:
     def _parseLikeMsg(self, payload):
         '''点赞消息'''
         m = self._parseFromString('LikeMessage', payload)
-        self.log_msg(f"【点赞】{m.user.nickname} 点了{m.count}个赞")
+        self.log_msg(f"【点赞】{m.user.nickname}\u200b 点了{m.count}个赞")
 
     def _parseMemberMsg(self, payload):
         '''进入直播间消息'''
@@ -722,7 +722,7 @@ class DouyinLiveWebFetcher:
             f"【进场】[{u.id}][{gender}]("
             f"{u.pay_grade.level},{u.fans_club.data.level},"
             f"{u.follow_info.following_count},{u.follow_info.follower_count}"
-            f") {u.nickname} 来了")
+            f") {u.nickname}\u200b 来了")
 
     def _parseSocialMsg(self, payload):
         '''社交消息'''
@@ -745,7 +745,7 @@ class DouyinLiveWebFetcher:
     def _parseEmojiChatMsg(self, payload):
         '''聊天表情包消息'''
         m = self._parseFromString('EmojiChatMessage', payload)
-        self.log_msg(f"【表情包】 {m.user.nickname}: {render_text(m.emoji_content)}")
+        self.log_msg(f"【表情包】 {m.user.nickname}\u200b: {render_text(m.emoji_content)}")
 
     def _parseExhibitionChatMessage(self, payload):
         m = self._parseFromString('ExhibitionChatMessage', payload)
@@ -761,7 +761,7 @@ class DouyinLiveWebFetcher:
 
     def _parseRankMsg(self, payload):
         m = self._parseFromString('RoomRankMessage', payload)
-        ranks = [f'{r.user.nickname}({r.score})' for r in m.audience_ranks]
+        ranks = [f'{r.user.nickname}\u200b({r.score})' for r in m.audience_ranks]
         self.log_msg(f"【直播间排行榜】{' │ ' .join(ranks)}")
 
     def _parseControlMsg(self, payload):
@@ -783,7 +783,7 @@ class DouyinLiveWebFetcher:
 
     def _parseLuckyBoxMessage(self, payload):
         m = self._parseFromString('LuckyBoxMessage', payload)
-        self.log_msg(f"【红包】{m.user.nickname} 送出红包，价值 {m.diamond_count}，标题：{m.title}")
+        self.log_msg(f"【红包】{m.user.nickname}\u200b 送出红包，价值 {m.diamond_count}，标题：{m.title}")
 
     def _parsePreviewCjRpMessage(self, payload):
         m = self._parseFromString('PreviewCjRpMessage', payload)
@@ -820,7 +820,7 @@ class DouyinLiveWebFetcher:
         def print_linked_users(fmt: str, linked_users: List) -> Tuple[int, str]:
             users: List[str] = []
             for e in linked_users:
-                users.append(f'{e.user.nickname}({e.user.id})')
+                users.append(f'{e.user.nickname}\u200b({e.user.id})')
                 if e.content.linkmic_content.host_name:
                     users[-1] += ' ' + e.content.linkmic_content.host_name
             # return len(linked_users), ' │ ' .join(users)
@@ -847,16 +847,16 @@ class DouyinLiveWebFetcher:
 
     def _parseScreenChatMessage(self, payload):
         m = self._parseFromString('ScreenChatMessage', payload)
-        self.log_msg(f"【飘屏 {m.screen_chat_type}】{m.user.nickname}：{m.content}")
+        self.log_msg(f"【飘屏 {m.screen_chat_type}】{m.user.nickname}\u200b：{m.content}")
 
     def _parsePrivilegeScreenChatMessage(self, payload):
         m = self._parseFromString('PrivilegeScreenChatMessage', payload)
-        self.log_msg(f"【飘屏 样式等级{m.style}】{m.user.nickname}：{m.content}")
+        self.log_msg(f"【飘屏 样式等级{m.style}】{m.user.nickname}\u200b：{m.content}")
 
     def _parseAudioChatMessage(self, payload):
         m = self._parseFromString('AudioChatMessage', payload)
         self.log_msg(
-            f"【语音 {math.ceil(m.audio_duration/1000)}s】{m.user.nickname}：{m.content} ({m.audio_url})")
+            f"【语音 {math.ceil(m.audio_duration/1000)}s】{m.user.nickname}\u200b：{m.content} ({m.audio_url})")
 
     def _parseToastMessage(self, payload):
         m = self._parseFromString('ToastMessage', payload)
@@ -875,7 +875,7 @@ class DouyinLiveWebFetcher:
             link_type_map = {1: '视频连线', 2: '语音连线'}
             users = []
             for e in payload.linked_users:
-                users.append(f'{e.user.nickname}({e.user.id})')
+                users.append(f'{e.user.nickname}\u200b({e.user.id})')
                 if e.link_type in link_type_map:
                     users[-1] += ' ' + link_type_map[e.link_type]
             self.log_msg(f"【连线状态同步】{len(users)}位连线用户：{' │ ' .join(users)}")
@@ -923,7 +923,7 @@ class DouyinLiveWebFetcher:
         m = self._parseFromString('AnchorLinkmicSilenceMessage', payload)
         silence_action = {1: '静音', 2: '取消静音'}.get(m.silence_action)
         self.log_msg(
-            f'【静音】{self.nickname_or_id(m.from_user_id)} 将 {self.nickname_or_id(m.to_user_id)} {silence_action} 了')
+            f'【静音】{self.nickname_or_id(m.from_user_id)}\u200b 将 {self.nickname_or_id(m.to_user_id)}\u200b {silence_action} 了')
 
     def _parseNotifyMessage(self, payload):
         m = self._parseFromString('NotifyMessage', payload)
@@ -989,7 +989,7 @@ class DouyinLiveWebFetcher:
         user_armies_list = []
         for user_id, user_armies in m.user_armies_map.items():
             user_armies_list.append(
-                self.nickname_or_id(user_id) + '：' +
+                self.nickname_or_id(user_id) + '\u200b：' +
                 ' │ '.join([f'{u.nickname}({u.score})' for u in user_armies.user_armies] or ['(空)'])
             )
         self.log_msg('【PK 战队】 ' + ' ┃ '.join(user_armies_list))
@@ -1034,7 +1034,7 @@ class DouyinLiveWebFetcher:
         self.log_msg(
             '【PK】' +
             ' │ '.join([pk_user(info) for info in m.user_infos.values()]) +
-            f' 由{self.nickname_or_id(m.battle_settings.initiator_id)}发起'
+            f' 由{self.nickname_or_id(m.battle_settings.initiator_id)}\u200b发起'
         )
 
     def _parseLinkMicBattleFinishMethod(self, payload):
@@ -1043,7 +1043,7 @@ class DouyinLiveWebFetcher:
         self.log_msg(
             '【PK 结束分数】' +
             ' │ '.join([
-                f'{self.nickname_or_id(o.user_id)}: {o.score}' for o in m.battle_scores
+                f'{self.nickname_or_id(o.user_id)}\u200b: {o.score}' for o in m.battle_scores
             ])
         )
 
@@ -1054,7 +1054,7 @@ class DouyinLiveWebFetcher:
             self.log_msg(
                 '【PK 结束音浪】' +
                 ' │ '.join([
-                    self.nickname_or_id(user_id) + ': ' + data.get('summary_value', '（未知）')
+                    self.nickname_or_id(user_id) + '\u200b: ' + data.get('summary_value', '（未知）')
                     for user_id, data in battle_finish_data.items()
                 ])
             )
